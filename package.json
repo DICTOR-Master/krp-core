@@ -1,11 +1,11 @@
 {
   "name": "krp-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "KRP core: the geometry shared by Kaleidohedra and Rhombiverse (by DICTO). Plain ES modules, no dependencies, no build step.",
   "scripts": {
     "test": "node --test tests/unit/*.test.mjs",
-    "verify": "for s in packing pyrochlore quasicrystal rhombohedra shells; do node scripts/verify-$s.mjs || exit 1; done"
+    "verify": "for s in packing pyrochlore quasicrystal rhombohedra shells roof-fold nets dicto-fcc; do node scripts/verify-$s.mjs || exit 1; done"
   }
 }

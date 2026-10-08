@@ -13,6 +13,11 @@ no page code, no stored state.
 - `src/geometry-extensions/`: the lattice and shape generators (BCC detail, calcite, dual, elongated
   dodecahedron, growth, hex prism, interstitial, pyrochlore, cut-and-project quasicrystals, rhombic
   dodecahedron pieces, golden rhombohedra, rock salt, sphere packing, spherical toggle).
+- The Euclid–Kepler–Pacioli cell by DICTO (`roof-fold.js`): the cube, dodecahedron, folded
+  icosahedron, octahedron, stella octangula, great stellated dodecahedron, Pacioli's rectangles
+  and the Dogstar, and what is built from them (the Dragon Jewel, the Sunstar and Stella–Jewel
+  Lattices, the studies). Kaleidohedra's DISCOVERIES.md records the findings.
+- Nets (`nets.js`): every solid unfolded flat and folded closed. DICTO FCC (`dicto-fcc.js`).
 - `tests/unit/`, `scripts/verify-*.mjs`: the checks, run on every push.
 
 Plain ES modules, no dependencies, no build step:
