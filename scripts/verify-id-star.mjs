@@ -1,4 +1,4 @@
-// Verifies the icosidodecahedral star (geometry-extensions/id-star.js), Kaleidohedra's DISCOVERIES.md #14:
+// Verifies DICTO-Star (geometry-extensions/id-star.js), Kaleidohedra's DISCOVERIES.md #14:
 //   - 1 icosidodecahedron, 12 dodecahedra on its pentagons, 20 J63 on its triangles, edge 1;
 //   - no two of the 33 solids overlap (separating axis);
 //   - every one of the icosidodecahedron's 60 edges is closed: the dodecahedron's face there is exactly a

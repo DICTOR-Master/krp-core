@@ -1,5 +1,5 @@
-// The icosidodecahedral star (Kaleidohedra's DISCOVERIES.md #14, 2026-10-09; following DICTO's
-// diminished-icosahedron idea): an icosidodecahedron with a regular dodecahedron on each of its 12
+// DICTO-Star (Kaleidohedra's DISCOVERIES.md #14, 2026-10-09; DICTO built it first, from PET bottle
+// caps and security rings): an icosidodecahedron with a regular dodecahedron on each of its 12
 // pentagons and a tridiminished icosahedron (Johnson J63) on each of its 20 triangles, by J63's one
 // triangle bordered only by pentagons. Every contact is a whole face, nothing overlaps and no filler is
 // needed: at each of the icosidodecahedron's 60 edges 142.6226 + 116.5651 + 100.8123 = 360 degrees, and
@@ -77,7 +77,7 @@ function placeOn(src, srcFace, dst) {
   return null;
 }
 
-/** The star: { centre, dodecahedra[12], caps[20] } (vertex lists, edge 1). */
+/** DICTO-Star: { centre, dodecahedra[12], caps[20] } (vertex lists, edge 1). */
 export function idStar() {
   const centre = icosidodecahedron();
   const Dv = dodecahedronUnit(), Jv = tridiminishedIcosahedron();

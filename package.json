@@ -1,6 +1,6 @@
 {
   "name": "krp-core",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "private": true,
   "type": "module",
   "description": "KRP core: the geometry shared by Kaleidohedra, Rhombiverse and Polyhedraverse (by DICTO). Plain ES modules, no build step; three.js only for src/assembly.",
