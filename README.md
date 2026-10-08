@@ -20,6 +20,8 @@ no page code, no stored state.
 - Nets (`nets.js`): every solid unfolded flat and folded closed. DICTO FCC (`dicto-fcc.js`).
 - DICTO's 13-dodecahedron cluster (`dodeca-cluster.js`): a dodecahedron with one on each face, and
   its gaps as exact pieces, 30 wedges and 20 needles (Kaleidohedra's DISCOVERIES.md #13).
+- The icosidodecahedral star (`id-star.js`): an icosidodecahedron with a dodecahedron on each
+  pentagon and a tridiminished icosahedron on each triangle, every edge closed (DISCOVERIES.md #14).
 - Kaleidohedra's lattice shear (`kaleido-lattice.js`): six lattice parameters and the Cell slider.
 - `src/request.js`, `src/retention.js`: objects requested by ID (with a session cache), and kept
   entries (an ID and a fingerprint, checked when reopened).
