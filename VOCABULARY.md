@@ -26,7 +26,7 @@ A generator may take parameters.
 **Family.** The first part of a generator name: the system the object belongs to, e.g. `ekp`
 (the Euclid–Kepler–Pacioli cell).
 
-**Version.** The version of krp-core (`0.3.0`, a git tag), which is the version of every generator
+**Version.** The version of krp-core (`0.4.0`, a git tag), which is the version of every generator
 in it. The same ID at the same version always regenerates the same object.
 
 **Parameter state.** The values a generator is given: numbers, true/false or text, each named, e.g.
@@ -35,8 +35,8 @@ in it. The same ID at the same version always regenerates the same object.
 **Object ID.** `generator@version?parameters`, the parameters in alphabetical order:
 
 ```
-ekp/dogstar@0.3.0
-ekp/expanded-windows@0.3.0?push=0.7265425280053608
+ekp/dogstar@0.4.0
+ekp/expanded-windows@0.4.0?push=0.7265425280053608
 ```
 
 Readable, and it says exactly how to make the object again. Text values are quoted and
@@ -102,7 +102,7 @@ different one. It detects change, nothing more (not a security hash).
 
 ```js
 {
-  id: 'ekp/dogstar@0.3.0', generator: 'ekp/dogstar', version: '0.3.0', params: {},
+  id: 'ekp/dogstar@0.4.0', generator: 'ekp/dogstar', version: '0.4.0', params: {},
   label: 'Dogstar', dimension: 3, ambient: 3, family: 'ekp', parent: 'ekp/cell',
   topology: { vertices: 32, edges: 90, faces: 60, faceSizes: { 3: 60 }, closed: true, components: 1, euler: 2 },
   measurements: { volume: 1.527864…, edgeLengths: [ … ] },
@@ -125,6 +125,16 @@ Pacioli's rectangles, the icosahedron, octahedron, Dogstar, stella octangula, cu
 dodecahedron and dodecahedron; the cell itself (its parts, nested); the Dragon Jewel; the expanded
 windows (a parameterised generator); and the Sunstar (parts, side by side). Credits and statuses
 follow Kaleidohedra's DISCOVERIES.md.
+
+## Requests (stage 3)
+
+An environment asks for an object by its ID: `request('ekp/dogstar@0.4.0')` returns
+`{ description, faces }`, the object regenerated with its description. An ID made by another
+version of the core is refused: this core cannot promise to regenerate it exactly. Each site
+displays the object at its own size and in its own way (Polyhedraverse scales the Dogstar to
+dodecahedron edge 1 and cuts its seams); the record stays the core's.
+
+A prior-art credit has a full form (`credit`) and a short one for display (`short`).
 
 ## Not decided yet
 

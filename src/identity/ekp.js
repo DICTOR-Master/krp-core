@@ -8,46 +8,46 @@ import { KRP_VERSION, objectId, topologyOf, volumeOf, edgeLengthsOf, fingerprint
 const CHECK = 'scripts/verify-roof-fold.mjs';
 const EKP_DOI = 'https://doi.org/10.5281/zenodo.23173809';
 const S = () => roofFoldSolids();
-const classical = (credit) => ({ kind: 'prior-art', credit });
+const classical = (credit, short) => ({ kind: 'prior-art', credit, short });
 const curated = (date, note) => [{ status: 'Curated', date, by: 'DICTO', note }];
 
 // Every EKP object sits in the same cell: a cube of edge 2 centred on the origin.
 export const EKP_RECORDS = {
   'ekp/pacioli-rectangles': {
     label: "Pacioli's golden rectangles", dimension: 2, make: () => S().rects.faces,
-    novelty: classical('Luca Pacioli, De divina proportione (1509)'),
+    novelty: classical('Luca Pacioli, De divina proportione (1509)', 'Pacioli (1509)'),
     names: {}, status: 'Curated', history: curated('2026-10-06', 'DISCOVERIES #8: the folded roof ridges, corners on the icosahedron'),
   },
   'ekp/icosahedron': {
-    label: 'Icosahedron', make: () => S().ico.faces, novelty: classical('classical (Euclid, Elements XIII)'),
+    label: 'Icosahedron', make: () => S().ico.faces, novelty: classical('classical (Euclid, Elements XIII)', 'Euclid, Elements XIII'),
     names: {}, status: 'Curated', history: curated('2026-10-06', "DISCOVERIES #8: Euclid's roofs folded back in through the cube's faces"),
   },
   'ekp/octahedron': {
-    label: 'Octahedron', make: () => S().oct.faces, novelty: classical('classical (Euclid, Elements XIII)'),
+    label: 'Octahedron', make: () => S().oct.faces, novelty: classical('classical (Euclid, Elements XIII)', 'Euclid, Elements XIII'),
     names: {}, status: 'Curated', history: curated('2026-10-06', 'DISCOVERIES #8'),
   },
   'ekp/dogstar': {
     label: 'Dogstar', make: () => dogstarSolid(),
-    novelty: { kind: 'prior-art', credit: "George W. Hart, stellation 8 of the dodecahedron, 'Tetrahedral Stellations of the Dodecahedron' (1996); also Polyhedra-World", ref: 'https://www.georgehart.com/virtual-polyhedra/stellations-dodecahedron-tetrahedral.html' },
+    novelty: { kind: 'prior-art', credit: "George W. Hart, stellation 8 of the dodecahedron, 'Tetrahedral Stellations of the Dodecahedron' (1996); also Polyhedra-World", short: 'G. W. Hart (1996)', ref: 'https://www.georgehart.com/virtual-polyhedra/stellations-dodecahedron-tetrahedral.html' },
     names: { DICTO: 'Dogstar' }, status: 'Curated',
     history: curated('2026-10-08', 'DICTO named it: the hole regular dodecahedra leave in their densest lattice packing; volume phi/2 at dodecahedron edge 1; an EKP piece between the octahedron and the stella octangula'),
   },
   'ekp/stella-octangula': {
     label: 'Stella octangula', make: () => S().stella.faces, compound: 'two regular tetrahedra, overlapping in the octahedron',
-    novelty: classical('Johannes Kepler (Harmonices Mundi, 1619)'),
+    novelty: classical('Johannes Kepler (Harmonices Mundi, 1619)', 'Kepler (1619)'),
     names: {}, status: 'Curated', history: curated('2026-10-06', 'DISCOVERIES #8'),
   },
   'ekp/cube': {
-    label: 'Cube', make: () => S().cube.faces, novelty: classical('classical (Euclid, Elements XIII)'),
+    label: 'Cube', make: () => S().cube.faces, novelty: classical('classical (Euclid, Elements XIII)', 'Euclid, Elements XIII'),
     names: {}, status: 'Curated', history: curated('2026-10-06', 'DISCOVERIES #8: the cell itself'),
   },
   'ekp/great-stellated-dodecahedron': {
     label: 'Great stellated dodecahedron', make: () => S().star.faces,
-    novelty: classical('Johannes Kepler (Harmonices Mundi, 1619)'),
+    novelty: classical('Johannes Kepler (Harmonices Mundi, 1619)', 'Kepler (1619)'),
     names: {}, status: 'Curated', history: curated('2026-10-06', 'DISCOVERIES #8; #12: the great stellated dodecahedron of the Dogstar\'s 1/phi^3 core'),
   },
   'ekp/dodecahedron': {
-    label: 'Dodecahedron', make: () => S().dodeca.faces, novelty: classical('Euclid, Elements XIII.17 (roofs on a cube)'),
+    label: 'Dodecahedron', make: () => S().dodeca.faces, novelty: classical('Euclid, Elements XIII.17 (roofs on a cube)', 'Euclid, Elements XIII.17'),
     names: {}, status: 'Curated', history: curated('2026-10-06', 'DISCOVERIES #8'),
   },
   'ekp/cell': {

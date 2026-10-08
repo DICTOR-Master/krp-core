@@ -24,7 +24,7 @@ test('every EKP record is complete and uses only the vocabulary\'s words', () =>
   for (const [g, r] of Object.entries(EKP_RECORDS)) {
     assert.ok(STATUSES.includes(r.status) || r.status === UNRESOLVED, g);
     assert.ok(NOVELTY.includes(r.novelty.kind), g);
-    if (r.novelty.kind === 'prior-art') assert.ok(r.novelty.credit, `${g}: prior art needs its credit`);
+    if (r.novelty.kind === 'prior-art') assert.ok(r.novelty.credit && r.novelty.short, `${g}: prior art needs its credit, in full and short`);
     if (r.novelty.kind === 'not-found') assert.ok(r.novelty.scope && r.novelty.date, `${g}: 'not found' needs its scope and date`);
     assert.ok(r.history.length && r.history.every((h) => STATUSES.includes(h.status) && /^\d{4}-\d\d-\d\d$/.test(h.date)), g);
     for (const p of r.parts ?? []) assert.ok(EKP_RECORDS[p.generator], `${g}: part ${p.generator}`);
@@ -94,4 +94,16 @@ test('novelty is kept apart from status: curated objects can be classical or new
   assert.equal(describe('ekp/dogstar').names.DICTO, 'Dogstar');
   assert.equal(describe('ekp/cell').novelty.kind, 'not-found');
   assert.equal(describe('ekp/dragon-jewel').novelty.kind, 'not-found');
+});
+
+test('request: an ID in, the regenerated object and its description out', async () => {
+  const { request, GENERATORS } = await import('../../src/request.js');
+  assert.ok(GENERATORS.includes('ekp/dogstar'));
+  const r = request(objectId('ekp/dogstar'));
+  assert.equal(r.description.id, `ekp/dogstar@${KRP_VERSION}`);
+  assert.equal(r.description.fingerprint, fingerprintOf(r.faces), 'the faces handed over are the recorded object');
+  const w = request(objectId('ekp/expanded-windows', { push: 0.3 }));
+  assert.equal(w.description.status, 'Generated');
+  assert.throws(() => request('ekp/dogstar@0.0.1'), /was made by krp-core 0\.0\.1/);
+  assert.throws(() => request(objectId('ekp/nothing')), /no generator/);
 });
