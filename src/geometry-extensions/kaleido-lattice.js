@@ -7,6 +7,7 @@
 // map taking FCC's basis to it, with its rotation removed, so the scene
 // shears and stretches but never spins.
 import { dictoMatrix } from './dicto-fcc.js';
+import { convexHullFaces } from './roof-fold.js';
 
 export const FCC_BASIS = [[1, 1, 0], [1, 0, 1], [0, 1, 1]];
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -269,4 +270,32 @@ export function pathTargets(t, minScore = 0.6, range = PATH_RANGE, step = 0.02, 
     if (same) same.kind = 'regular tetrahedra'; else out.push({ at, kind: 'regular tetrahedra', score: q(at) });
   }
   return out.sort((x, y) => x.at - y.at);
+}
+
+// ---- Where the cell fills space (DICTO, 2026-10-08: "stay as is but with a red band") ----
+// One cell per lattice point fills space only if its volume is the lattice's cell volume. Near the
+// path's ends the Cell slider's t > 0 cells stop doing so (their four directions move far from the
+// sheared RD's); the Shear panel marks those stretches in red. t = 0 always fills space.
+function hullVolume(points) {
+  let v = 0;
+  for (const f of convexHullFaces(points)) for (let m = 1; m + 1 < f.length; m++) v += det([f[0], f[m], f[m + 1]]);
+  return Math.abs(v) / 6;
+}
+
+/** Whether the cell at lattice parameters p and Cell slider t fills space (one per lattice point). */
+export function cellFillsSpace(p, t) {
+  const cellVolume = Math.abs(det(basisOf(p)));
+  return Math.abs(hullVolume(cellCorners(cellDirections(p, t))) - cellVolume) < 1e-6 * Math.max(1, cellVolume);
+}
+
+/** The stretches of the path where the cell at Cell slider t does not fill space: [[from, to], ...]. */
+export function pathGaps(t, towards = 'dicto', step = 0.01) {
+  const [lo, hi] = pathRange(towards);
+  const gaps = [];
+  for (let s = lo; s <= hi + 1e-9; s += step) {
+    if (cellFillsSpace(paramsOnPath(s, towards), t)) continue;
+    const last = gaps[gaps.length - 1];
+    if (last && s - last[1] < step * 1.5) last[1] = Math.min(s, hi); else gaps.push([s, Math.min(s, hi)]);
+  }
+  return gaps;
 }
