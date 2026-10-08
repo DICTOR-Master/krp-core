@@ -27,7 +27,7 @@ export const EKP_RECORDS = Object.fromEntries(Object.entries({
   },
   'ekp/dogstar': {
     label: 'Dogstar', make: () => dogstarSolid(),
-    novelty: { kind: 'prior-art', credit: "George W. Hart, stellation 8 of the dodecahedron, 'Tetrahedral Stellations of the Dodecahedron' (1996); also Polyhedra-World", short: 'G. W. Hart (1996)', ref: 'https://www.georgehart.com/virtual-polyhedra/stellations-dodecahedron-tetrahedral.html' },
+    novelty: { kind: 'prior-art', credit: "George W. Hart, stellation 8 of the dodecahedron, 'Tetrahedral Stellations of the Dodecahedron' (1996); also Polyhedra-World, and Hans Walser's 'semi-regular dodecahedron' (a cube with its six hip roofs cut away, checkerboarded with regular dodecahedra)", short: 'G. W. Hart (1996)', ref: 'https://www.georgehart.com/virtual-polyhedra/stellations-dodecahedron-tetrahedral.html' },
     names: { DICTO: 'Dogstar' }, status: 'Curated',
     history: curated('2026-10-08', 'DICTO named it: the hole regular dodecahedra leave in their densest lattice packing; volume phi/2 at dodecahedron edge 1; an EKP piece between the octahedron and the stella octangula'),
   },
