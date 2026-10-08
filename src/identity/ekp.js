@@ -131,7 +131,8 @@ export function describe(generator, params = {}) {
     status: inRecord ? r.status : 'Generated',
     history: inRecord ? r.history.map((h) => ({ ...h })) : [],
     retention: inRecord ? 'retained' : 'ephemeral',
+    // Only a retained object carries one (declared here so typed consumers see the field).
+    fingerprint: inRecord ? fingerprintOf(faces) : undefined,
   };
-  if (d.retention === 'retained') d.fingerprint = fingerprintOf(faces);
   return d;
 }
