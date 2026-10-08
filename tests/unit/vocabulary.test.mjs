@@ -3,7 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { KRP_VERSION, STATUSES, UNRESOLVED, NOVELTY, RETENTION, objectId, parseObjectId, fingerprintOf } from '../../src/vocabulary.js';
-import { EKP_RECORDS, describe } from '../../src/identity/ekp.js';
+import { EKP_RECORDS } from '../../src/identity/ekp.js';
+import { describe } from '../../src/identity/index.js';
 import { EXPANDED_WINDOWS_GOLDEN, PHI } from '../../src/geometry-extensions/roof-fold.js';
 
 test('KRP_VERSION is the package version', () => {

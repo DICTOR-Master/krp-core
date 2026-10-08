@@ -18,6 +18,9 @@ no page code, no stored state.
   and the Dogstar, and what is built from them (the Dragon Jewel, the Sunstar and Stella–Jewel
   Lattices, the studies). Kaleidohedra's DISCOVERIES.md records the findings.
 - Nets (`nets.js`): every solid unfolded flat and folded closed. DICTO FCC (`dicto-fcc.js`).
+- Kaleidohedra's lattice shear (`kaleido-lattice.js`): six lattice parameters and the Cell slider.
+- `src/request.js`, `src/retention.js`: objects requested by ID (with a session cache), and kept
+  entries (an ID and a fingerprint, checked when reopened).
 - `src/vocabulary.js`, `src/identity/`: the KRP vocabulary (IDs, versions, status, novelty,
   provenance) and the first records using it, the EKP objects. See [VOCABULARY.md](VOCABULARY.md).
 - `tests/unit/`, `scripts/verify-*.mjs`: the checks, run on every push.

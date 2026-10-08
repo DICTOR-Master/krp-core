@@ -1,9 +1,8 @@
 // The Euclid–Kepler–Pacioli objects described in the KRP vocabulary (stage 1's test case, DICTO's
 // decision 2026-10-08). Each record says how to regenerate the object and what is known about it;
 // describe() turns a record and a parameter state into the object's full description. Credits and
-// statuses follow Kaleidohedra's DISCOVERIES.md.
+// statuses follow Kaleidohedra's DISCOVERIES.md. describe() itself is in describe.js.
 import { roofFoldSolids, ekpWindowsSolid, expandedWindows, EXPANDED_WINDOWS_GOLDEN, dogstarSolid } from '../geometry-extensions/roof-fold.js';
-import { KRP_VERSION, objectId, topologyOf, volumeOf, edgeLengthsOf, fingerprintOf } from '../vocabulary.js';
 
 const CHECK = 'scripts/verify-roof-fold.mjs';
 const EKP_DOI = 'https://doi.org/10.5281/zenodo.23173809';
@@ -12,7 +11,7 @@ const classical = (credit, short) => ({ kind: 'prior-art', credit, short });
 const curated = (date, note) => [{ status: 'Curated', date, by: 'DICTO', note }];
 
 // Every EKP object sits in the same cell: a cube of edge 2 centred on the origin.
-export const EKP_RECORDS = {
+export const EKP_RECORDS = Object.fromEntries(Object.entries({
   'ekp/pacioli-rectangles': {
     label: "Pacioli's golden rectangles", dimension: 2, make: () => S().rects.faces,
     novelty: classical('Luca Pacioli, De divina proportione (1509)', 'Pacioli (1509)'),
@@ -67,7 +66,7 @@ export const EKP_RECORDS = {
   'ekp/expanded-windows': {
     label: 'Expanded windows', params: { push: { min: 0, max: 1 } }, make: ({ push }) => expandedWindows(push),
     // Only the golden push is in the record (study 10a); any other push is a working state.
-    curatedAt: { push: EXPANDED_WINDOWS_GOLDEN },
+    curated: [{ params: { push: EXPANDED_WINDOWS_GOLDEN } }],
     novelty: { kind: 'not-searched', note: 'study 10a of #10, not a separate claim' },
     names: {}, status: 'Curated',
     history: curated('2026-10-08', 'DISCOVERIES study 10a: the 12 window rhombi pushed straight out by sqrt(7 - 4 phi) hull into a 74-face solid with a flat net'),
@@ -79,60 +78,4 @@ export const EKP_RECORDS = {
     names: { DICTO: 'Sunstar' }, status: 'Curated',
     history: curated('2026-10-08', 'a dodecahedron with the 6 Dogstars on its faces (the 8 at its corners only touch it at a point)'),
   },
-};
-
-const sameParams = (a, b) => Object.keys(b).length === Object.keys(a).length && Object.keys(b).every((k) => a[k] === b[k]);
-
-/** The faces of a generator's object at a parameter state (parts translated and joined). */
-export function facesOf(generator, params = {}) {
-  const r = EKP_RECORDS[generator];
-  if (!r) throw new Error(`no record for '${generator}'`);
-  if (r.parts) return r.parts.flatMap(({ generator: g, offset }) => facesOf(g).map((f) => f.map((p) => p.map((c, i) => c + offset[i]))));
-  return r.make(params);
-}
-
-/** An object's full description in the KRP vocabulary. */
-export function describe(generator, params = {}) {
-  const r = EKP_RECORDS[generator];
-  if (!r) throw new Error(`no record for '${generator}'`);
-  for (const k of Object.keys(params)) if (!r.params?.[k]) throw new Error(`'${generator}' has no parameter '${k}'`);
-  for (const [k, { min, max }] of Object.entries(r.params ?? {})) {
-    if (typeof params[k] !== 'number') throw new Error(`'${generator}' needs a number '${k}'`);
-    if (params[k] < min || params[k] > max) throw new Error(`'${generator}': ${k} is outside ${min}..${max}`);
-  }
-  // A parameterised object is in the record only at its curated state; anywhere else it was just generated.
-  const inRecord = !r.curatedAt || sameParams(params, r.curatedAt);
-  const faces = facesOf(generator, params);
-  const solid = (r.dimension ?? 3) === 3 && !r.nested;
-  // Built from parts: the parts' own topology counts (joined faces would not form one surface).
-  const topology = r.parts
-    ? { parts: r.parts.length, partsClosed: r.parts.every((p) => topologyOf(facesOf(p.generator)).closed) }
-    : topologyOf(faces);
-  const d = {
-    id: objectId(generator, params),
-    generator,
-    version: KRP_VERSION,
-    params: { ...params },
-    label: r.label,
-    dimension: r.dimension ?? 3,
-    ambient: 3,
-    family: 'ekp',
-    parent: generator === 'ekp/cell' ? null : 'ekp/cell',
-    ...(r.parts ? { parts: r.parts.map((p) => ({ ...p, offset: [...p.offset] })), nested: !!r.nested } : {}),
-    ...(r.compound ? { compound: r.compound } : {}),
-    topology,
-    measurements: {
-      ...(solid ? { volume: r.parts ? r.parts.reduce((t, p) => t + volumeOf(facesOf(p.generator)), 0) : volumeOf(faces) } : {}),
-      edgeLengths: edgeLengthsOf(faces),
-    },
-    validation: [CHECK],
-    names: { ...r.names },
-    novelty: inRecord ? { ...r.novelty } : { kind: 'not-searched' },
-    status: inRecord ? r.status : 'Generated',
-    history: inRecord ? r.history.map((h) => ({ ...h })) : [],
-    retention: inRecord ? 'retained' : 'ephemeral',
-    // Only a retained object carries one (declared here so typed consumers see the field).
-    fingerprint: inRecord ? fingerprintOf(faces) : undefined,
-  };
-  return d;
-}
+}).map(([g, r]) => [g, { family: 'ekp', parent: g === 'ekp/cell' ? null : 'ekp/cell', validation: [CHECK], ...r }]));
