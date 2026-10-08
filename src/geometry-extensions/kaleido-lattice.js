@@ -288,14 +288,25 @@ export function cellFillsSpace(p, t) {
   return Math.abs(hullVolume(cellCorners(cellDirections(p, t))) - cellVolume) < 1e-6 * Math.max(1, cellVolume);
 }
 
-/** The stretches of the path where the cell at Cell slider t does not fill space: [[from, to], ...]. */
-export function pathGaps(t, towards = 'dicto', step = 0.01) {
+/** The stretches of the path where the cell at Cell slider t does not fill space: [[from, to], ...].
+ *  A coarse scan, each edge then found by bisection to 1e-4. */
+export function pathGaps(t, towards = 'dicto', step = 0.05) {
   const [lo, hi] = pathRange(towards);
+  const fills = (s) => cellFillsSpace(paramsOnPath(s, towards), t);
+  const edge = (a, b) => { const fa = fills(a); for (let k = 0; k < 20 && b - a > 1e-4; k++) { const m = (a + b) / 2; if (fills(m) === fa) a = m; else b = m; } return (a + b) / 2; };
+  const xs = [];
+  for (let s = lo; s < hi; s += step) xs.push(s);
+  xs.push(hi);
+  const ok = xs.map(fills);
   const gaps = [];
-  for (let s = lo; s <= hi + 1e-9; s += step) {
-    if (cellFillsSpace(paramsOnPath(s, towards), t)) continue;
-    const last = gaps[gaps.length - 1];
-    if (last && s - last[1] < step * 1.5) last[1] = Math.min(s, hi); else gaps.push([s, Math.min(s, hi)]);
+  for (let i = 0; i < xs.length; i++) {
+    if (ok[i]) continue;
+    const from = i === 0 ? lo : edge(xs[i - 1], xs[i]);
+    let j = i;
+    while (j + 1 < xs.length && !ok[j + 1]) j++;
+    const to = j === xs.length - 1 ? hi : edge(xs[j], xs[j + 1]);
+    gaps.push([from, to]);
+    i = j;
   }
   return gaps;
 }

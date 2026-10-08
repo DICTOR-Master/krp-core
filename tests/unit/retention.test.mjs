@@ -77,7 +77,7 @@ test('kept entries: an ID and a fingerprint; reopening regenerates and compares'
   // Kept with an older core: regenerated here, and said so.
   const older = { ...e, id: e.id.replace(`@${KRP_VERSION}`, '@0.4.1') };
   assert.deepEqual([checkKept(older).result, checkKept(older).madeWith], ['same', '0.4.1']);
-  assert.equal(checkKept({ ...e, id: 'kaleido/gone@0.5.1' }).result, 'unavailable');
+  assert.equal(checkKept({ ...e, id: 'kaleido/gone@0.5.2' }).result, 'unavailable');
   assert.equal(checkKept({ ...e, id: 'not an id' }).result, 'unavailable');
   for (const bad of [null, {}, { ...e, fingerprint: 'xyz' }, { ...e, kept: 'yesterday' }, { ...e, name: 3 }]) assert.equal(isKeptEntry(bad), false);
 });
@@ -85,9 +85,9 @@ test('kept entries: an ID and a fingerprint; reopening regenerates and compares'
 test('the red band: where the Shear cell stops filling space', async () => {
   const { pathGaps, cellFillsSpace } = await import('../../src/geometry-extensions/kaleido-lattice.js');
   for (const tw of ['dicto', 'bain']) assert.deepEqual(pathGaps(0, tw), [], `t = 0 always fills space (${tw})`);
-  const round = (g) => g.map(([a, b]) => [Math.round(a * 100) / 100, Math.round(b * 100) / 100]);
-  assert.deepEqual(round(pathGaps(1, 'dicto')), [[-7, -3.08], [4.41, 4.6]]);
-  assert.deepEqual(round(pathGaps(1, 'bain')), [[-5, -3.24]]);
+  const near = (g, want) => g.length === want.length && g.every(([a, b], i) => Math.abs(a - want[i][0]) < 0.01 && Math.abs(b - want[i][1]) < 0.01);
+  assert.ok(near(pathGaps(1, 'dicto'), [[-7, -3.08], [4.41, 4.6]]), JSON.stringify(pathGaps(1, 'dicto')));
+  assert.ok(near(pathGaps(1, 'bain'), [[-5, -3.24]]), JSON.stringify(pathGaps(1, 'bain')));
   // It agrees with the generated cell's own volume.
   for (const s of [-5, 0, 4.5]) {
     const p = paramsOnPath(s);

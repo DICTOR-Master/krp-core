@@ -26,7 +26,7 @@ A generator may take parameters.
 **Family.** The first part of a generator name: the system the object belongs to, e.g. `ekp`
 (the Euclid–Kepler–Pacioli cell).
 
-**Version.** The version of krp-core (`0.5.1`, a git tag), which is the version of every generator
+**Version.** The version of krp-core (`0.5.2`, a git tag), which is the version of every generator
 in it. The same ID at the same version always regenerates the same object.
 
 **Parameter state.** The values a generator is given: numbers, true/false or text, each named, e.g.
@@ -35,8 +35,8 @@ in it. The same ID at the same version always regenerates the same object.
 **Object ID.** `generator@version?parameters`, the parameters in alphabetical order:
 
 ```
-ekp/dogstar@0.5.1
-ekp/expanded-windows@0.5.1?push=0.7265425280053608
+ekp/dogstar@0.5.2
+ekp/expanded-windows@0.5.2?push=0.7265425280053608
 ```
 
 Readable, and it says exactly how to make the object again. Text values are quoted and
@@ -102,7 +102,7 @@ different one. It detects change, nothing more (not a security hash).
 
 ```js
 {
-  id: 'ekp/dogstar@0.5.1', generator: 'ekp/dogstar', version: '0.5.1', params: {},
+  id: 'ekp/dogstar@0.5.2', generator: 'ekp/dogstar', version: '0.5.2', params: {},
   label: 'Dogstar', dimension: 3, ambient: 3, family: 'ekp', parent: 'ekp/cell',
   topology: { vertices: 32, edges: 90, faces: 60, faceSizes: { 3: 60 }, closed: true, components: 1, euler: 2 },
   measurements: { volume: 1.527864…, edgeLengths: [ … ] },
@@ -128,7 +128,7 @@ follow Kaleidohedra's DISCOVERIES.md.
 
 ## Requests (stage 3)
 
-An environment asks for an object by its ID: `request('ekp/dogstar@0.5.1')` returns
+An environment asks for an object by its ID: `request('ekp/dogstar@0.5.2')` returns
 `{ description, faces }`, the object regenerated with its description. An ID made by another
 version of the core is refused: this core cannot promise to regenerate it exactly. Each site
 displays the object at its own size and in its own way (Polyhedraverse scales the Dogstar to
@@ -140,7 +140,7 @@ A prior-art credit has a full form (`credit`) and a short one for display (`shor
 
 **Generated on request.** A site never holds a working state's geometry as its own: it asks for the
 state's ID and the core regenerates it. Kaleidohedra's Shear is the first: every slider state is
-`kaleido/cell@0.5.1?a=…&alpha=…&b=…&beta=…&c=…&gamma=…&t=…`, the six lattice parameters and the Cell
+`kaleido/cell@0.5.2?a=…&alpha=…&b=…&beta=…&c=…&gamma=…&t=…`, the six lattice parameters and the Cell
 slider, Generated and ephemeral.
 
 **Cached.** The core remembers its latest 200 answers for the session, so asking again is free.
