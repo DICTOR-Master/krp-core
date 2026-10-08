@@ -1,6 +1,6 @@
 # krp-core
 
-The geometry shared by **Kaleidohedra** and **Rhombiverse**, by DICTO.
+The geometry shared by **Kaleidohedra**, **Rhombiverse** and **Polyhedraverse**, by DICTO.
 
 This is the first step of KRP (Kaleidohedra · Rhombiverse · Polyhedraverse): one source of geometry
 that several sites use, instead of a copy in each. The sites stay separate; each pins a version of
@@ -21,6 +21,11 @@ no page code, no stored state.
 - Kaleidohedra's lattice shear (`kaleido-lattice.js`): six lattice parameters and the Cell slider.
 - `src/request.js`, `src/retention.js`: objects requested by ID (with a session cache), and kept
   entries (an ID and a fingerprint, checked when reopened).
+- Polyhedraverse's shapes (`src/polyhedra/`): the registry of 312 polyhedra and their families
+  (Platonic, Archimedean, Johnson, Catalan, deltahedra, prisms, stellations, star polyhedra, the
+  parallelohedra and space-filling pairs, 4D projections …), the RVCMG pieces (`src/rvcmg/`) and
+  printable nets (`src/polyhedra-nets/`). Each `.js` has a `.d.ts` beside it for TypeScript users;
+  the `*.test.mjs` checks beside them run in `npm run verify`.
 - `src/vocabulary.js`, `src/identity/`: the KRP vocabulary (IDs, versions, status, novelty,
   provenance) and the first records using it, the EKP objects. See [VOCABULARY.md](VOCABULARY.md).
 - `tests/unit/`, `scripts/verify-*.mjs`: the checks, run on every push.

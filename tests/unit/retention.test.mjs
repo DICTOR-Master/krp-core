@@ -77,7 +77,7 @@ test('kept entries: an ID and a fingerprint; reopening regenerates and compares'
   // Kept with an older core: regenerated here, and said so.
   const older = { ...e, id: e.id.replace(`@${KRP_VERSION}`, '@0.4.1') };
   assert.deepEqual([checkKept(older).result, checkKept(older).madeWith], ['same', '0.4.1']);
-  assert.equal(checkKept({ ...e, id: 'kaleido/gone@0.5.2' }).result, 'unavailable');
+  assert.equal(checkKept({ ...e, id: 'kaleido/gone@0.6.0' }).result, 'unavailable');
   assert.equal(checkKept({ ...e, id: 'not an id' }).result, 'unavailable');
   for (const bad of [null, {}, { ...e, fingerprint: 'xyz' }, { ...e, kept: 'yesterday' }, { ...e, name: 3 }]) assert.equal(isKeptEntry(bad), false);
 });

@@ -6,7 +6,7 @@
 // is added only when it is deliberately retained, to prove a regeneration still matches.
 
 /** The core's version, the version of every generator in it (equals package.json; checked). */
-export const KRP_VERSION = '0.5.2';
+export const KRP_VERSION = '0.6.0';
 
 /** Checking, in order. Unresolved can replace any step whose identification or validation is incomplete. */
 export const STATUSES = ['Generated', 'Candidate', 'Recognized', 'Verified', 'Curated'];
