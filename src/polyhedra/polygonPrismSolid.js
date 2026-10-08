@@ -33,7 +33,7 @@
  * rectangle's mirror lines pass through edge midpoints, so no turn ever
  * seated one, and the kite prisms kept their rectangle sides unattachable.
  * Face attach now tries each corner against corner 0 and keeps only the
- * placements where the faces sit flush (app/lib/faceAttach.ts), which
+ * placements where the faces sit flush (../assembly/faceAttach.js), which
  * seats any pair of congruent faces; every side of these prisms attaches.
  */
 import { buildConnectors, centerVertices, rotateFaceToMirrorAxis } from './core.js';

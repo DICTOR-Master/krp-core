@@ -26,11 +26,15 @@ no page code, no stored state.
   parallelohedra and space-filling pairs, 4D projections …), the RVCMG pieces (`src/rvcmg/`) and
   printable nets (`src/polyhedra-nets/`). Each `.js` has a `.d.ts` beside it for TypeScript users;
   the `*.test.mjs` checks beside them run in `npm run verify`.
+- Polyhedraverse's building (`src/assembly/`): the build graph and its saved form, face attach (every
+  matching face and flush turn) and face registration, face kinds and piece colours, the running
+  build name (Tetrahedral Star …), and the golden-rhombohedra helper. The one part that uses
+  three.js (vectors, quaternions, its convex hull): import `three` from the page's import map or npm.
 - `src/vocabulary.js`, `src/identity/`: the KRP vocabulary (IDs, versions, status, novelty,
   provenance) and the first records using it, the EKP objects. See [VOCABULARY.md](VOCABULARY.md).
 - `tests/unit/`, `scripts/verify-*.mjs`: the checks, run on every push.
 
-Plain ES modules, no dependencies, no build step:
+Plain ES modules, no build step, no dependencies (but three.js for `src/assembly/`):
 
 ```sh
 npm test

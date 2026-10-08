@@ -67,7 +67,7 @@ function kitePrism(id, name, catalanId) {
   // attaches: the rectangles used to be left out, since the old face-attach
   // rule (corner 0 to corner 0, then turn) could never seat a face whose
   // mirror lines pass through edge midpoints; face attach now tries each
-  // corner and keeps only flush placements (app/lib/faceAttach.ts,
+  // corner and keeps only flush placements (../../../assembly/faceAttach.js,
   // 2026-09-30).
   const squareLateralFaces = [0, 1, 2, 3]
     .filter((i) => Math.abs(dist(faceVertices[i], faceVertices[(i + 1) % 4]) - edgeShort) < 1e-9)
