@@ -3,10 +3,9 @@
 //   - tetrahedral (4 dodecahedra round a cell corner) and octahedral (6 round an odd cell), no two
 //     overlapping, neighbours meeting on parts of faces (seamed into matching cells);
 //   - each surface closed and consistently wound (every edge run as often one way as the other);
-//   - the octahedral cluster encloses its odd cell's Dogstar as a hidden hole: points inside the
-//     Dogstar are outside the cluster, points just outside the Dogstar's surface are inside it;
-//     and where two of its dodecahedra meet round the Dogstar they meet along its edges;
-//   - volumes exactly 4 and 6 dodecahedra;
+//   - the octahedral cluster holds its odd cell's Dogstar, which fits the six dodecahedra face for
+//     face (the build checks it): a solid piece (DICTO), points inside the Dogstar inside it;
+//   - volumes exactly 4 dodecahedra, and 6 dodecahedra and a Dogstar;
 //   - both fill space with Dogstars (every dodecahedron cell in exactly one cluster), and as a
 //     shared network they are the octet truss's cells, every Dogstar inside one octahedral cluster.
 import { POLYHEDRA } from '../src/polyhedra/index.js';
@@ -25,7 +24,7 @@ const volume = ({ vertices: V, faces: F }) => F.reduce((t, f) => {
 let seed = 23;
 const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 
-for (const [id, cells, n] of [['DODECA_TETRAHEDRAL_CLUSTER', DODECA_TETRA_CENTRES, 4], ['DODECA_OCTAHEDRAL_CLUSTER', DODECA_OCTA_CENTRES, 6]]) {
+for (const [id, cells, n, extra] of [['DODECA_TETRAHEDRAL_CLUSTER', DODECA_TETRA_CENTRES, 4, 0], ['DODECA_OCTAHEDRAL_CLUSTER', DODECA_OCTA_CENTRES, 6, 1]]) {
   const C = POLYHEDRA[id];
   check(`${C?.name}: registered`, !!C);
   // No overlap: sample points (cell units, world = 2 x cell) in more than one dodecahedron.
@@ -44,7 +43,8 @@ for (const [id, cells, n] of [['DODECA_TETRAHEDRAL_CLUSTER', DODECA_TETRA_CENTRE
   const balanced = [...dir.entries()].every(([k, v]) => { const [a, b] = k.split('>'); return dir.get(`${b}>${a}`) === v; });
   const fours = [...und.values()].filter((v) => v === 4).length;
   check(`  closed and consistently wound (every edge run as often each way); ${fours} edges where two dodecahedra meet edge to edge`, balanced && [...und.values()].every((v) => v === 2 || v === 4));
-  check(`  volume exactly ${n} dodecahedra (${volume(C).toFixed(6)})`, Math.abs(volume(C) - n * DODECA_VOL) < 1e-8);
+  const want = n * DODECA_VOL + extra * volume(POLYHEDRA.DOGSTAR);
+  check(`  volume exactly ${n} dodecahedra${extra ? ' and a Dogstar' : ''} (${volume(C).toFixed(6)})`, Math.abs(volume(C) - want) < 1e-8);
 }
 
 // The octahedral cluster's hidden Dogstar.
@@ -93,17 +93,18 @@ for (const [id, cells, n] of [['DODECA_TETRAHEDRAL_CLUSTER', DODECA_TETRA_CENTRE
     wallN++;
     if (inside(p)) wallOk++;
   }
-  check(`the octahedral cluster's hidden hole is its Dogstar: ${holeOk} of ${inDog} points inside the Dogstar are outside the cluster`, inDog > 50 && holeOk === inDog);
-  check(`  and the Dogstar is walled in: ${wallOk} of ${wallN} points just outside it are inside the cluster`, wallN > 100 && wallOk === wallN);
+  check(`the octahedral cluster is solid, its Dogstar inside: ${inDog - holeOk} of ${inDog} points inside the Dogstar are inside the cluster`, inDog > 50 && holeOk === 0);
+  check(`  and walled in by the six dodecahedra: ${wallOk} of ${wallN} points just outside the Dogstar are inside the cluster`, wallN > 100 && wallOk === wallN);
 }
 
 // Space-filling with Dogstars and the octet network: the same cells as the DICTO Jewel clusters
 // (dodecahedra on the even cells, Dogstars on the odd, filling space: verify-roof-fold.mjs).
 {
   const tetraSame = JSON.stringify(DODECA_TETRA_CENTRES) === JSON.stringify(DJ_TETRA_OFFSETS);
-  const octaSame = DODECA_OCTA_CENTRES.length === 6 && DODECA_OCTA_CENTRES.every((d) => Math.abs(d[0]) + Math.abs(d[1]) + Math.abs(d[2]) === 1);
+  // the six even cells round the odd cell (1, 0, 0)
+  const octaSame = DODECA_OCTA_CENTRES.length === 6 && DODECA_OCTA_CENTRES.every((d) => Math.abs(d[0] - 1) + Math.abs(d[1]) + Math.abs(d[2]) === 1 && (d[0] + d[1] + d[2]) % 2 === 0);
   check('the clusters sit on the same cells as the DICTO Jewel clusters (tetrahedral at a cell corner, octahedral round an odd cell)', tetraSame && octaSame);
-  check(`so both fill space with Dogstars (packings DJ_TETRA_OFFSETS and DJ_OCTA_TILING, checked in verify-dicto-jewel-cluster.mjs) and form the octet network, every Dogstar inside one octahedral cluster`, DJ_OCTA_TILING.basis.length === 3);
+  check(`so both fill space with Dogstars, the octahedral ones solid with their own Dogstar inside (packings DJ_TETRA_OFFSETS and DJ_OCTA_TILING, checked in verify-dicto-jewel-cluster.mjs), and form the octet network`, DJ_OCTA_TILING.basis.length === 3);
 }
 
 console.log(failures === 0 ? '\nAll checks passed (0 failures).' : `\n${failures} check(s) FAILED.`);

@@ -135,10 +135,10 @@ function stellaOctangula() {
 // - Tetrahedral (DICTO built it in the app): four Jewels at the corners of a tetrahedron of cells,
 //   6 shared rhombi; 228 faces (192 triangles, 36 rhombi); its four lobes also touch at one point,
 //   the cell corner at the centre. Volume 4 Jewels.
-// - Octahedral: the six Jewels round one odd cell, at the corners of an octahedron, 12 shared rhombi.
-//   They enclose a stella octangula-shaped hole (the odd cell's stella), sealed but for its 8 spike
-//   tips, where the hole's wall touches the outside at a point. Surface 336 faces: 288 outside and
-//   the hole's 48. Volume 6 Jewels.
+// - Octahedral: the six Jewels round one odd cell, at the corners of an octahedron, 12 shared rhombi,
+//   and that cell's stella octangula, which they enclose exactly (sealed but for its 8 spike tips,
+//   where it touches the outside at a point): a solid piece (DICTO). Surface 288 faces. Volume 6
+//   Jewels and a stella.
 export const DJ_TETRA_CENTRES = [[0, 0, 0], [2, 2, 0], [2, 0, 2], [0, 2, 2]]; // raw cube-edge-2 units
 export const DJ_OCTA_CENTRES = [[2, 0, 0], [-2, 0, 0], [0, 2, 0], [0, -2, 0], [0, 0, 2], [0, 0, -2]];
 // Both clusters fill space with stella octangulas (DICTO, 2026-10-09), in cell units (a cell = cube
@@ -149,7 +149,7 @@ export const DJ_OCTA_CENTRES = [[2, 0, 0], [-2, 0, 0], [0, 2, 0], [0, -2, 0], [0
 //   by exact cover): every Jewel in exactly one cluster, 5 more stellas per cluster between them.
 export const DJ_TETRA_OFFSETS = [[0, 0, 0], [1, 1, 0], [1, 0, 1], [0, 1, 1]];
 export const DJ_OCTA_TILING = { origin: [1, 0, 0], basis: [[2, 1, -1], [2, -1, 1], [1, 2, 1]] };
-function djCluster(id, name, centres) {
+function djCluster(id, name, centres, filling = null) {
   // Each Jewel's faces as the DICTO Jewel spec winds them (outward), on the same raw corners.
   const { verts: dv } = dragonJewelRaw();
   const df = STELLA_JEWEL_DJ.faces;
@@ -163,18 +163,24 @@ function djCluster(id, name, centres) {
     return i;
   };
   const all = centres.flatMap((c) => df.map((f) => f.map((i) => at(add(dv[i], c)))));
+  // A solid cluster (DICTO, 2026-10-09: "the stella-shaped hole could have a stella in it, it's a
+  // solid"): the centre piece's faces go in too, each meeting a Jewel's face and cancelling with it.
+  const fill = filling ? filling.faces.map((f) => f.map((i) => at(filling.vertices[i].map((x) => x / K)))) : [];
   const key = (f) => [...f].sort((x, y) => x - y).join(',');
   const count = new Map();
-  for (const f of all) count.set(key(f), (count.get(key(f)) ?? 0) + 1);
+  for (const f of [...all, ...fill]) count.set(key(f), (count.get(key(f)) ?? 0) + 1);
+  if (fill.some((f) => count.get(key(f)) !== 2))
+    throw new Error(`${id}: the centre piece does not fit the Jewels round it face for face`);
   const faces = all.filter((f) => count.get(key(f)) === 1);
   const c = centres.reduce((t, p) => add(t, p.map((x) => x / centres.length)), [0, 0, 0]);
   return specOf(id, name, verts.map((v) => sub(v, c)), faces, true);
 }
 const STELLA_JEWEL_DJ = dragonJewel();
+const STELLA_JEWEL_STELLA = stellaOctangula();
 export const STELLA_JEWEL_ADDITIONS = {
   DRAGON_JEWEL: STELLA_JEWEL_DJ,
-  STELLA_OCTANGULA: stellaOctangula(),
+  STELLA_OCTANGULA: STELLA_JEWEL_STELLA,
   DJ_TETRAHEDRAL_CLUSTER: djCluster('DJ_TETRAHEDRAL_CLUSTER', 'DICTO Jewel tetrahedral cluster', DJ_TETRA_CENTRES),
-  DJ_OCTAHEDRAL_CLUSTER: djCluster('DJ_OCTAHEDRAL_CLUSTER', 'DICTO Jewel octahedral cluster', DJ_OCTA_CENTRES),
+  DJ_OCTAHEDRAL_CLUSTER: djCluster('DJ_OCTAHEDRAL_CLUSTER', 'DICTO Jewel octahedral cluster', DJ_OCTA_CENTRES, STELLA_JEWEL_STELLA),
 };
 export const STELLA_JEWEL_ADDITION_IDS = Object.keys(STELLA_JEWEL_ADDITIONS);

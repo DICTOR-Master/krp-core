@@ -144,12 +144,13 @@ const ALL = packingFaces();
 // as the DICTO Jewel clusters): dodecahedra on even cells meeting on parts of faces, cut by the
 // seaming into matching cells, which are inside; each face wound against its own (convex) dodecahedron.
 // - Tetrahedral: four dodecahedra round a cell corner, where four Dogstar tips meet.
-// - Octahedral: the six dodecahedra round an odd cell, enclosing that cell's Dogstar as a hidden hole
-//   (sealed but for the Dogstar's 8 tips). A Sunstar is a dodecahedron with its 6 Dogstars; this is a
-//   Dogstar with its 6 dodecahedra. Checked in scripts/verify-sunstar-cluster.mjs.
+// - Octahedral: the six dodecahedra round an odd cell and that cell's Dogstar, which they enclose
+//   exactly (sealed but for its 8 tips): a solid piece (DICTO). A Sunstar is a dodecahedron with its 6
+//   Dogstars; this is a Dogstar with its 6 dodecahedra. Checked in scripts/verify-sunstar-cluster.mjs.
 export const DODECA_TETRA_CENTRES = [[0, 0, 0], [1, 1, 0], [1, 0, 1], [0, 1, 1]]; // cells (world = 2x)
-export const DODECA_OCTA_CENTRES = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
-function dodecaCluster(id, name, cells) {
+// The six even cells round the odd cell (1, 0, 0), where the packing's Dogstar sits (world [2, 0, 0]).
+export const DODECA_OCTA_CENTRES = [[0, 0, 0], [2, 0, 0], [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1]];
+function dodecaCluster(id, name, cells, withDogstar = false) {
   const faces = [];
   for (const cell of cells) {
     const c = scale(cell, 2);
@@ -159,9 +160,18 @@ function dodecaCluster(id, name, cells) {
       faces.push(dot(n, sub(m, c)) < 0 ? [...f].reverse() : f);
     }
   }
-  const key = (f) => f.map((p) => p.map((x) => x.toFixed(6)).join(',')).sort().join('|');
+  // (+0 so that -0 and 0 key alike)
+  const key = (f) => f.map((p) => p.map((x) => (Math.round(x * 1e6) / 1e6 + 0).toFixed(6)).join(',')).sort().join('|');
   const count = new Map();
   for (const f of faces) count.set(key(f), (count.get(key(f)) ?? 0) + 1);
+  // A solid cluster (DICTO): the odd cell's Dogstar goes in too, each of its seamed faces meeting a
+  // dodecahedron's and cancelling with it.
+  if (withDogstar) {
+    const dog = seam(DOGSTAR.map((f) => f.map((p) => add(p, [2, 0, 0]))), ALL);
+    for (const f of dog) count.set(key(f), (count.get(key(f)) ?? 0) + 1);
+    if (dog.some((f) => count.get(key(f)) !== 2))
+      throw new Error(`${id}: the Dogstar does not fit the dodecahedra round it face for face`);
+  }
   const centre = scale(cells.reduce((t, p) => add(t, p), [0, 0, 0]), 2 / cells.length);
   return specOf(id, name, faces.filter((f) => count.get(key(f)) === 1), centre, true);
 }
@@ -169,6 +179,6 @@ export const SUNSTAR_ADDITIONS = {
   SEAMED_DODECAHEDRON: specOf('SEAMED_DODECAHEDRON', 'Dodecahedron, seamed for Dogstars', seam(DODECA, ALL), [0, 0, 0]),
   DOGSTAR: specOf('DOGSTAR', 'Dogstar', seam(DOGSTAR.map((f) => f.map((p) => add(p, [2, 0, 0]))), ALL), [2, 0, 0]),
   DODECA_TETRAHEDRAL_CLUSTER: dodecaCluster('DODECA_TETRAHEDRAL_CLUSTER', 'Sunstar tetrahedral cluster (4 dodecahedra)', DODECA_TETRA_CENTRES),
-  DODECA_OCTAHEDRAL_CLUSTER: dodecaCluster('DODECA_OCTAHEDRAL_CLUSTER', 'Sunstar octahedral cluster (6 dodecahedra round a Dogstar)', DODECA_OCTA_CENTRES),
+  DODECA_OCTAHEDRAL_CLUSTER: dodecaCluster('DODECA_OCTAHEDRAL_CLUSTER', 'Sunstar octahedral cluster (6 dodecahedra round a Dogstar)', DODECA_OCTA_CENTRES, true),
 };
 export const SUNSTAR_ADDITION_IDS = Object.keys(SUNSTAR_ADDITIONS);

@@ -6,8 +6,9 @@
 //   - one pinch point only, the cell corner at the centre, where the four lobes touch; with it
 //     split, the surface is a sphere (Euler characteristic 2);
 //   - volume exactly four DICTO Jewels.
-// The octahedral cluster (at the end): six Jewels round an odd cell, 12 shared rhombi, no overlap; a
-// hidden stella octangula-shaped hole, sealed but for its 8 spike tips; volume six Jewels.
+// The octahedral cluster (at the end): six Jewels round an odd cell, 12 shared rhombi, no overlap, and
+// the cell's stella octangula inside, fitting them face for face: a solid piece; volume six Jewels and
+// a stella.
 // Both fill space with stella octangulas: every Jewel (even cell) in exactly one cluster, stellas in
 // the other cells (Jewels and stellas fill space: verify-roof-fold.mjs).
 // As a shared network (DICTO's octet idea): the clusters are the cells of the octet truss on the
@@ -118,23 +119,15 @@ check(`volume = 4 DICTO Jewels (${volume(C).toFixed(6)} = 4 x ${volume(DJ).toFix
     eu.set(k, (eu.get(k) ?? 0) + 1); dir.set(`${a}>${b}`, (dir.get(`${a}>${b}`) ?? 0) + 1);
   }));
   check('closed and consistently wound: every edge on two faces, run once each way', [...eu.values()].every((n) => n === 2) && [...dir.values()].every((n) => n === 1));
-  // Components across edges: the outside and the hole's wall.
-  const parent = O.faces.map((_, i) => i), find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
-  const byE = new Map();
-  O.faces.forEach((f, fi) => f.forEach((a, i) => { const b = f[(i + 1) % f.length], k = a < b ? `${a}-${b}` : `${b}-${a}`; if (byE.has(k)) parent[find(fi)] = find(byE.get(k)); else byE.set(k, fi); }));
-  const comps = new Map(); O.faces.forEach((_, i) => comps.set(find(i), [...(comps.get(find(i)) ?? []), i]));
-  const sizes = [...comps.values()].map((c) => c.length).sort((a, b) => a - b);
-  check(`two surfaces: the outside (${sizes[1]} faces) and the hidden hole's wall (${sizes[0]} triangles)`, sizes.length === 2 && sizes[0] === 48 && sizes[1] === 288);
-  // The hole is the odd cell's stella octangula: its wall is the stella's 48 half-triangles.
+  // Solid (DICTO: "the stella-shaped hole could have a stella in it, it's a solid"): the odd cell's
+  // stella goes in, every one of its 48 faces cancelling against a Jewel's (the build checks it), so
+  // the surface is the outside alone.
   const ST = POLYHEDRA.STELLA_OCTANGULA;
-  const stellaKeys = new Set(ST.faces.map((f) => faceKey(f.map((i) => ST.vertices[i]))));
-  const hole = [...comps.values()].find((c) => c.length === 48);
-  check('the hole is exactly the stella octangula (its 48 half-triangles)', hole.every((fi) => stellaKeys.has(faceKey(O.faces[fi].map((i) => O.vertices[i])))));
-  // Where the two surfaces meet: the stella's 8 spike tips, single points.
-  const holeV = new Set(hole.flatMap((fi) => O.faces[fi])), outV = new Set([...comps.values()].find((c) => c.length === 288).flatMap((fi) => O.faces[fi]));
-  const meet = [...holeV].filter((v) => outV.has(v));
-  check(`the hole touches the outside only at the stella's 8 spike tips (${meet.length} points)`, meet.length === 8 && meet.every((v) => O.vertices[v].every((x) => Math.abs(Math.abs(x) - K) < 1e-9)));
-  check(`volume = 6 DICTO Jewels, the hole empty (${volume(O).toFixed(6)})`, Math.abs(volume(O) - 6 * volume(DJ)) < 1e-9);
+  check(`solid: its surface is the outside alone (${O.faces.length} faces), the stella inside fitting the six Jewels face for face`, O.faces.length === 288);
+  // The stella's surface touches the outside only at its 8 spike tips.
+  const tips = O.vertices.filter((v) => v.every((x) => Math.abs(Math.abs(x) - K) < 1e-9));
+  check(`the stella inside reaches the outside only at its 8 spike tips (${tips.length})`, tips.length === 8);
+  check(`volume = 6 DICTO Jewels and a stella octangula (${volume(O).toFixed(6)})`, Math.abs(volume(O) - 6 * volume(DJ) - volume(ST)) < 1e-9);
 }
 
 // ---- both clusters + stellas fill space: every even cell in exactly one cluster ----
