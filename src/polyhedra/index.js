@@ -16,6 +16,7 @@ import { MISCELLANEOUS_ADDITIONS, MISCELLANEOUS_ADDITION_IDS } from './miscellan
 import { APERIODIC_ADDITIONS, APERIODIC_ADDITION_IDS } from './aperiodic.js';
 import { STELLA_JEWEL_ADDITIONS, STELLA_JEWEL_ADDITION_IDS } from './stellaJewel.js';
 import { SUNSTAR_ADDITIONS, SUNSTAR_ADDITION_IDS } from './sunstar.js';
+import { HEXA_ADDITIONS, HEXA_ADDITION_IDS } from './hexa.js';
 import { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS } from './bridges.js';
 import { STELLATION_ADDITIONS, STELLATION_IDS } from './stellations/index.js';
 export * from './core.js';
@@ -29,6 +30,7 @@ export { MISCELLANEOUS_ADDITIONS, MISCELLANEOUS_ADDITION_IDS } from './miscellan
 export { APERIODIC_ADDITIONS, APERIODIC_ADDITION_IDS, APERIODIC_PAIRS } from './aperiodic.js';
 export { STELLA_JEWEL_ADDITIONS, STELLA_JEWEL_ADDITION_IDS } from './stellaJewel.js';
 export { SUNSTAR_ADDITIONS, SUNSTAR_ADDITION_IDS } from './sunstar.js';
+export { HEXA_ADDITIONS, HEXA_ADDITION_IDS, HEXA_PARTS, HEXA_VOLUMES } from './hexa.js';
 export { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS, BRIDGES_3D_IDS } from './bridges.js';
 export { STELLATION_ADDITIONS, STELLATION_IDS, stellationInfo } from './stellations/index.js';
 export { isFaceEligibleForAttach } from './attachEligibility.js';
@@ -43,6 +45,7 @@ export const POLYHEDRA = {
   ...APERIODIC_ADDITIONS,
   ...STELLA_JEWEL_ADDITIONS,
   ...SUNSTAR_ADDITIONS,
+  ...HEXA_ADDITIONS,
   ...BRIDGE_ADDITIONS,
   ...STELLATION_ADDITIONS,
 };
@@ -57,6 +60,7 @@ export const POLYHEDRON_IDS = [
   ...APERIODIC_ADDITION_IDS,
   ...STELLA_JEWEL_ADDITION_IDS,
   ...SUNSTAR_ADDITION_IDS,
+  ...HEXA_ADDITION_IDS,
   ...BRIDGE_ADDITION_IDS,
   ...STELLATION_IDS,
 ];

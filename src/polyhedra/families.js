@@ -239,6 +239,8 @@ const EXTRA_MEMBERSHIP = [
   { id: 'DJ_OCTAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
   { id: 'DODECA_TETRAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
   { id: 'DODECA_OCTAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
+  // The DICTO Hexa family (2026-10-09).
+  ...['DICTO_HEXA', 'DICTO_HEXA_KEY', 'DICTO_HEXA_RHOMBO_CLUSTER', 'DICTO_HEXA_DIAMOND_CLUSTER', 'DICTO_HEXA_TRIMMED_JEWEL', 'DICTO_HEXA_ROOF'].map((id) => ({ id, family: 'MISCELLANEOUS' })),
 ];
 const membershipMap = (() => {
   const m = new Map();

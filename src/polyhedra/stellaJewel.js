@@ -6,7 +6,7 @@ const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const signs = [1, -1];
-function specOf(id, name, verts, faces, oriented = false) {
+export function specOf(id, name, verts, faces, oriented = false) {
   // Wind every face outward: consistently across shared edges (neighbours run a shared edge in
   // opposite directions), then all flipped together if the enclosed volume came out negative.
   // (These solids are concave, so no face can be tested against the centre on its own.)
