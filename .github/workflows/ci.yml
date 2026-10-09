@@ -9,11 +9,12 @@ on:
 jobs:
   geometry:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: 20
+      - run: npm install --no-audit --no-fund # three, for src/assembly's checks
       - run: npm test
       - run: npm run verify
