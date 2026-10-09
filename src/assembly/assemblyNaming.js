@@ -110,7 +110,48 @@ function centralWithCaps(nodes, connections, centerShape, capShape, capCount, fa
     }
     return used.size === capCount;
 }
+// DICTO-Star (Kaleidohedra's DISCOVERIES.md #14, DICTO's): an icosidodecahedron with a regular
+// dodecahedron on each of its 12 pentagons and a tridiminished icosahedron (J63) on each of its 20
+// triangles, each J63 by its one triangle bordered only by pentagons (the only way it closes exactly).
+const J63 = 'J63_TRIDIMINISHED_ICOSAHEDRON';
+let j63Top = null;
+function j63TopTriangle() {
+    if (j63Top !== null)
+        return j63Top;
+    const { faces } = POLYHEDRA[J63];
+    const shares = (f, g) => f.filter((v) => g.includes(v)).length === 2;
+    j63Top = faces.findIndex((f) => f.length === 3 && faces.filter((g) => g !== f && shares(f, g)).every((g) => g.length === 5));
+    return j63Top;
+}
+function isDictoStar(nodes, connections) {
+    if (nodes.length !== 33)
+        return false;
+    const centres = nodes.filter((n) => n.shape === 'ICOSIDODECAHEDRON');
+    if (centres.length !== 1)
+        return false;
+    const centre = centres[0], faces = POLYHEDRA.ICOSIDODECAHEDRON.faces;
+    const byId = new Map(nodes.map((n) => [n.id, n]));
+    const live = connections.filter((c) => !c.orphaned);
+    if (live.length !== 32 || !live.every((c) => c.kind === 'face'))
+        return false;
+    const used = new Set();
+    for (const c of live) {
+        const atCentre = c.nodeA === centre.id ? 'A' : c.nodeB === centre.id ? 'B' : null;
+        if (!atCentre)
+            return false;
+        const centreFace = atCentre === 'A' ? c.vertexA : c.vertexB;
+        const cap = byId.get(atCentre === 'A' ? c.nodeB : c.nodeA);
+        const capFace = atCentre === 'A' ? c.vertexB : c.vertexA;
+        const n = faces[centreFace]?.length;
+        if (n === 5 ? cap?.shape !== 'DODECAHEDRON' : n === 3 ? cap?.shape !== J63 || capFace !== j63TopTriangle() : true)
+            return false;
+        used.add(centreFace);
+    }
+    return used.size === 32;
+}
 const NAMED_ASSEMBLIES = [
+    /** DICTO-Star (DICTO, 2026-10-09; DISCOVERIES #14), first: DICTO's own work. */
+    { name: 'DICTO-Star', match: (_root, nodes, connections) => isDictoStar(nodes, connections) },
     /**
      * Confirmed 2026-09-24, direct user request: a truncated tetrahedron with
      * a regular tetrahedron (D4) face-attached to all 4 of its TRIANGLE
