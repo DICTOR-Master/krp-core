@@ -10,7 +10,7 @@
 //     shared network they are the octet truss's cells, every Dogstar inside one octahedral cluster.
 import { POLYHEDRA } from '../src/polyhedra/index.js';
 import { DODECA_TETRA_CENTRES, DODECA_OCTA_CENTRES } from '../src/polyhedra/sunstar.js';
-import { DJ_TETRA_OFFSETS, DJ_OCTA_TILING } from '../src/polyhedra/stellaJewel.js';
+import { DJ_TETRA_OFFSETS, DJ_OCTA_TILING, isKagomeAnchor } from '../src/polyhedra/stellaJewel.js';
 import { insideDodecahedron, insideDogstar } from '../src/geometry-extensions/roof-fold.js';
 
 let failures = 0;
@@ -104,6 +104,7 @@ for (const [id, cells, n, extra] of [['DODECA_TETRAHEDRAL_CLUSTER', DODECA_TETRA
   // the six even cells round the odd cell (1, 0, 0)
   const octaSame = DODECA_OCTA_CENTRES.length === 6 && DODECA_OCTA_CENTRES.every((d) => Math.abs(d[0] - 1) + Math.abs(d[1]) + Math.abs(d[2]) === 1 && (d[0] + d[1] + d[2]) % 2 === 0);
   check('the clusters sit on the same cells as the DICTO Jewel clusters (tetrahedral at a cell corner, octahedral round an odd cell)', tetraSame && octaSame);
+  check('and the Kagome network of tetrahedral clusters on the same cells (isKagomeAnchor, checked in verify-dicto-jewel-cluster.mjs): single dodecahedra and Dogstars fill the rest', isKagomeAnchor([0, 0, 0]) && !isKagomeAnchor([2, 0, 0]));
   check(`so both fill space with Dogstars, the octahedral ones solid with their own Dogstar inside (packings DJ_TETRA_OFFSETS and DJ_OCTA_TILING, checked in verify-dicto-jewel-cluster.mjs), and form the octet network`, DJ_OCTA_TILING.basis.length === 3);
 }
 

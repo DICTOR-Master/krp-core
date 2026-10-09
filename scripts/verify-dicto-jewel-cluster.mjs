@@ -14,7 +14,7 @@
 // As a shared network (DICTO's octet idea): the clusters are the cells of the octet truss on the
 // Jewels' lattice, sharing Jewels, every stella hidden inside an octahedral cluster.
 import { POLYHEDRA } from '../src/polyhedra/index.js';
-import { DJ_TETRA_CENTRES, DJ_OCTA_CENTRES, DJ_TETRA_OFFSETS, DJ_OCTA_TILING } from '../src/polyhedra/stellaJewel.js';
+import { DJ_TETRA_CENTRES, DJ_OCTA_CENTRES, DJ_TETRA_OFFSETS, DJ_OCTA_TILING, isKagomeAnchor } from '../src/polyhedra/stellaJewel.js';
 
 let failures = 0;
 const check = (label, ok) => { console.log(`${ok ? 'OK  ' : 'FAIL'} ${label}`); if (!ok) failures++; };
@@ -190,6 +190,36 @@ check(`volume = 4 DICTO Jewels (${volume(C).toFixed(6)} = 4 x ${volume(DJ).toFix
   check('every stella octangula is the hidden hole of exactly one octahedral cluster (its own cell the centre)', od.every((o) => octs.filter((c, i) => od[i] === o).length === 1));
   // with the octahedral clusters solid inside, they cover every cell: each even cell is in one, each odd cell is one's centre
   check('the filled octahedral clusters, sharing Jewels, cover all of space (every Jewel cell and every stella cell)', inner.every((j) => inO(j) >= 1) && od.length === octs.length);
+}
+
+// ---- the Kagome (pyrochlore) network of tetrahedral clusters (DICTO, 2026-10-09) ----
+{
+  const R = 8, key = (c) => c.join();
+  const up = [];
+  for (let x = -R; x <= R; x++) for (let y = -R; y <= R; y++) for (let z = -R; z <= R; z++)
+    if (isKagomeAnchor([x, y, z])) up.push(DJ_TETRA_OFFSETS.map((d) => [x + d[0], y + d[1], z + d[2]]));
+  const P = new Set(up.flat().map(key));
+  const upKeys = new Set(up.map((t) => t.map(key).sort().join('|')));
+  // the four even cells round each cell corner: a 'down' cluster where all four are held and it is no 'up' one
+  const down = [];
+  for (let x = -R; x < R; x++) for (let y = -R; y < R; y++) for (let z = -R; z < R; z++) {
+    const four = [];
+    for (const a of [0, 1]) for (const b of [0, 1]) for (const c of [0, 1]) { const q = [x + a, y + b, z + c]; if ((q[0] + q[1] + q[2]) % 2 === 0) four.push(q); }
+    if (four.every((q) => P.has(key(q))) && !upKeys.has(four.map(key).sort().join('|'))) down.push(four);
+  }
+  const inner = [...P].map((k) => k.split(',').map(Number)).filter((q) => q.every((v) => Math.abs(v) <= R - 3));
+  const nUp = (q) => up.filter((t) => t.some((c) => key(c) === key(q))).length, nDown = (q) => down.filter((t) => t.some((c) => key(c) === key(q))).length;
+  check('Kagome network: every Jewel it holds is in exactly one up and one down tetrahedral cluster', inner.length > 50 && inner.every((q) => nUp(q) === 1 && nDown(q) === 1));
+  let maxShare = 0;
+  for (const a of up.slice(0, 40)) for (const b of down) { const n = a.filter((c) => b.some((d) => key(d) === key(c))).length; maxShare = Math.max(maxShare, n); }
+  check(`  neighbouring clusters share a single Jewel, a corner, as Kagome triangles do (most shared: ${maxShare})`, maxShare === 1);
+  let held = 0, cells = 0;
+  // over a whole number of repeats (the pattern repeats every 4 cells)
+  for (let x = -4; x < 4; x++) for (let y = -4; y < 4; y++) for (let z = -4; z < 4; z++) {
+    if ((((x + y + z) % 2) + 2) % 2) continue;
+    cells++; if (P.has(key([x, y, z]))) held++;
+  }
+  check(`  it holds exactly half the Jewel cells (${held} of ${cells}); single Jewels take the rest, stellas the odd cells`, held * 2 === cells);
 }
 
 console.log(failures === 0 ? '\nAll checks passed (0 failures).' : `\n${failures} check(s) FAILED.`);

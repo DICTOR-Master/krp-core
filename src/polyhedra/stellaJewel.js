@@ -149,6 +149,13 @@ export const DJ_OCTA_CENTRES = [[2, 0, 0], [-2, 0, 0], [0, 2, 0], [0, -2, 0], [0
 //   by exact cover): every Jewel in exactly one cluster, 5 more stellas per cluster between them.
 export const DJ_TETRA_OFFSETS = [[0, 0, 0], [1, 1, 0], [1, 0, 1], [0, 1, 1]];
 export const DJ_OCTA_TILING = { origin: [1, 0, 0], basis: [[2, 1, -1], [2, -1, 1], [1, 2, 1]] };
+// The Kagome (pyrochlore) network of tetrahedral clusters (DICTO, 2026-10-09: "Kagome-style
+// reversing tetrahedrons"): 'up' clusters at the all-even anchors whose coordinates sum to a multiple
+// of 4 (a face-centred cubic arrangement of clusters); the 'down' clusters, the other way round, form
+// between them. Every Jewel it holds is in one up and one down cluster, neighbouring clusters share a
+// single Jewel (a corner, as Kagome triangles do), and it holds half the Jewel cells; the other half
+// take single Jewels, and stellas fill the odd cells as always.
+export const isKagomeAnchor = (a) => a.every((v) => v % 2 === 0) && (((a[0] + a[1] + a[2]) % 4) + 4) % 4 === 0;
 function djCluster(id, name, centres, filling = null) {
   // Each Jewel's faces as the DICTO Jewel spec winds them (outward), on the same raw corners.
   const { verts: dv } = dragonJewelRaw();
