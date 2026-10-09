@@ -234,8 +234,9 @@ const EXTRA_MEMBERSHIP = [
   { id: 'D12', family: 'JOHNSON' },
   { id: 'D14', family: 'JOHNSON' },
   { id: 'D16', family: 'JOHNSON' },
-  // DICTO's tetrahedral cluster of DICTO Jewels (a piece of its own, not a space-filling pair).
+  // DICTO's clusters of DICTO Jewels (pieces of their own, not space-filling pairs).
   { id: 'DJ_TETRAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
+  { id: 'DJ_OCTAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
 ];
 const membershipMap = (() => {
   const m = new Map();

@@ -11,6 +11,7 @@
 // angle, on top of its parent's own turn; the first face lies flat on
 // the screen throughout.
 
+import { POLYHEDRA } from '../polyhedra/index.js';
 import { roofFoldSolids, goldenRectangles, ROOF_FOLD_KINDS, dogstarSolid } from './roof-fold.js';
 
 // ---- a little linear algebra (4×4, column-major like THREE.Matrix4) ----
@@ -121,6 +122,25 @@ function dogstarMesh() {
   for (const f of faces) f.forEach((a, j) => { edge = Math.min(edge, Math.hypot(...sub(v[a], v[f[(j + 1) % f.length]]))); });
   return { v, faces, edge };
 }
+// DICTO's clusters of DICTO Jewels (polyhedra/stellaJewel.js). The octahedral cluster's net is its
+// outside only: its hidden stella-shaped hole shares no edge with the outside, and a folded paper
+// model leaves it empty anyway.
+function djClusterMesh(id) {
+  const P = POLYHEDRA[id];
+  let faces = P.faces;
+  // Keep the faces joined by edges to the first face (the outside; the hole's wall is apart).
+  const byEdge = new Map(), seen = new Set([0]), queue = [0];
+  faces.forEach((f, i) => f.forEach((a, j) => { const b = f[(j + 1) % f.length], k = a < b ? `${a}-${b}` : `${b}-${a}`; byEdge.set(k, [...(byEdge.get(k) ?? []), i]); }));
+  while (queue.length) {
+    const f = faces[queue.shift()];
+    f.forEach((a, j) => { const b = f[(j + 1) % f.length]; for (const o of byEdge.get(a < b ? `${a}-${b}` : `${b}-${a}`)) if (!seen.has(o)) { seen.add(o); queue.push(o); } });
+  }
+  const outside = faces.filter((_, i) => seen.has(i));
+  faces = outside.length >= faces.length / 2 ? outside : faces.filter((_, i) => !seen.has(i));
+  let edge = Infinity;
+  for (const f of faces) f.forEach((a, j) => { edge = Math.min(edge, Math.hypot(...sub(P.vertices[a], P.vertices[f[(j + 1) % f.length]]))); });
+  return { v: P.vertices.map((p) => [...p]), faces: faces.map((f) => [...f]), edge };
+}
 function hullOf(v) {
   const faces = [];
   const seen = new Set();
@@ -220,6 +240,10 @@ export const SOLIDS = {
   // Its first plain tree overlaps itself; `net` is a tree found free of overlap (a random
   // search: root face 8, depth first, seed 308), so it unfolds at once.
   dogstar: { label: 'Dogstar', groups: ['ekp'], make: dogstarMesh, net: [8, 0, true, 308] },
+  // DICTO's clusters of DICTO Jewels (DICTO, 2026-10-09): each `net` is a tree found free of
+  // overlap offline (scripts/find-net.mjs), so it unfolds at once.
+  djTetra: { label: 'DICTO Jewel tetrahedral cluster', groups: ['jewel'], make: () => djClusterMesh('DJ_TETRAHEDRAL_CLUSTER') },
+  djOcta: { label: 'DICTO Jewel octahedral cluster', groups: ['jewel'], make: () => djClusterMesh('DJ_OCTAHEDRAL_CLUSTER') },
   pacioli1: { label: "Pacioli's rectangle · A", groups: ['ekp'], assembly: 'pacioli', make: () => hullOf(goldenRectangles()[0]) },
   pacioli2: { label: "Pacioli's rectangle · B", groups: ['ekp'], assembly: 'pacioli', make: () => hullOf(goldenRectangles()[1]) },
   pacioli3: { label: "Pacioli's rectangle · C", groups: ['ekp'], assembly: 'pacioli', make: () => hullOf(goldenRectangles()[2]) },
@@ -236,7 +260,7 @@ export const EKP_PIECES = {
   cube: { kind: 'cube', cell: 1 }, starSpike: { kind: 'star', cell: 1 }, dodeca: { kind: 'dodeca', cell: 1 },
 };
 export const EKP_ORDER = ROOF_FOLD_KINDS.flatMap((k) => Object.keys(EKP_PIECES).filter((id) => EKP_PIECES[id].kind === k));
-export const SOLID_GROUPS = [{ id: 'voronoi', label: 'Voronoi cells' }, { id: 'platonic', label: 'Platonic solids' }, { id: 'archimedean', label: 'Archimedean solids' }, { id: 'golden', label: 'Golden zonohedra' }, { id: 'ekp', label: 'Euclid–Kepler–Pacioli cell' }];
+export const SOLID_GROUPS = [{ id: 'voronoi', label: 'Voronoi cells' }, { id: 'platonic', label: 'Platonic solids' }, { id: 'archimedean', label: 'Archimedean solids' }, { id: 'golden', label: 'Golden zonohedra' }, { id: 'ekp', label: 'Euclid–Kepler–Pacioli cell' }, { id: 'jewel', label: 'Stella–Jewel Lattice' }];
 
 // ---- nets ----
 // Faces as corner coordinates, scaled to edge L, each wound so its normal

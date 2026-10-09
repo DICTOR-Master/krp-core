@@ -1,12 +1,17 @@
-// Verifies the DICTO Jewel tetrahedral cluster (polyhedra/stellaJewel.js, DICTO 2026-10-09):
+// Verifies DICTO's clusters of DICTO Jewels (polyhedra/stellaJewel.js, DICTO 2026-10-09).
+// The tetrahedral cluster:
 //   - four DICTO Jewels at the corners of a regular tetrahedron of cells, each pair meeting face to
 //     face on a whole rhombus (6 shared rhombi), no two overlapping;
 //   - its surface: 228 faces (192 triangles, 36 rhombi), every edge on exactly two faces;
 //   - one pinch point only, the cell corner at the centre, where the four lobes touch; with it
 //     split, the surface is a sphere (Euler characteristic 2);
 //   - volume exactly four DICTO Jewels.
+// The octahedral cluster (at the end): six Jewels round an odd cell, 12 shared rhombi, no overlap; a
+// hidden stella octangula-shaped hole, sealed but for its 8 spike tips; volume six Jewels.
+// Both fill space with stella octangulas: every Jewel (even cell) in exactly one cluster, stellas in
+// the other cells (Jewels and stellas fill space: verify-roof-fold.mjs).
 import { POLYHEDRA } from '../src/polyhedra/index.js';
-import { DJ_TETRA_CENTRES } from '../src/polyhedra/stellaJewel.js';
+import { DJ_TETRA_CENTRES, DJ_OCTA_CENTRES, DJ_TETRA_OFFSETS, DJ_OCTA_TILING } from '../src/polyhedra/stellaJewel.js';
 
 let failures = 0;
 const check = (label, ok) => { console.log(`${ok ? 'OK  ' : 'FAIL'} ${label}`); if (!ok) failures++; };
@@ -84,6 +89,80 @@ const atCentre = pinch.length === 1 && len(C.vertices[pinch[0].v]) < 1e-9;
 check(`one pinch point, at the centre, where the four lobes touch (${pinch.length} found)`, atCentre && pinch[0].fans === 4);
 check(`with it split the surface is a sphere (Euler ${chi} + ${atCentre ? pinch[0].fans - 1 : '?'} = 2)`, atCentre && chi + pinch[0].fans - 1 === 2);
 check(`volume = 4 DICTO Jewels (${volume(C).toFixed(6)} = 4 x ${volume(DJ).toFixed(6)})`, Math.abs(volume(C) - 4 * volume(DJ)) < 1e-9);
+
+// ---- the octahedral cluster ----
+{
+  const O = POLYHEDRA.DJ_OCTAHEDRAL_CLUSTER;
+  check('the octahedral cluster is registered', !!O);
+  const omid = [0, 0, 0];
+  const op = DJ_OCTA_CENTRES.map((c) => DJ.vertices.map((v) => v.map((x, i) => x + (c[i] - omid[i]) * K)));
+  const osets = op.map((P) => new Set(DJ.faces.map((f) => faceKey(f.map((i) => P[i])))));
+  let touching = 0, shared = 0;
+  for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) {
+    const n = DJ.faces.filter((f) => f.length === 4 && osets[j].has(faceKey(f.map((k) => op[i][k])))).length;
+    if (n === 1) touching++;
+    shared += n;
+  }
+  check(`the six Jewels: 12 neighbouring pairs (the octahedron's edges) share a whole rhombus (${shared} shared, ${touching} pairs)`, touching === 12 && shared === 12);
+  let obad = 0;
+  for (let n = 0; n < 4000; n++) {
+    const p = [rnd(), rnd(), rnd()].map((x) => (x * 2 - 1) * 3.2 * K * 2);
+    if (op.filter((P) => inside(P, DJ.faces, p)).length > 1) obad++;
+  }
+  check(`no two Jewels overlap (4000 sample points, ${obad} in two)`, obad === 0);
+  const eu = new Map(), dir = new Map();
+  O.faces.forEach((f) => f.forEach((a, i) => {
+    const b = f[(i + 1) % f.length], k = a < b ? `${a}-${b}` : `${b}-${a}`;
+    eu.set(k, (eu.get(k) ?? 0) + 1); dir.set(`${a}>${b}`, (dir.get(`${a}>${b}`) ?? 0) + 1);
+  }));
+  check('closed and consistently wound: every edge on two faces, run once each way', [...eu.values()].every((n) => n === 2) && [...dir.values()].every((n) => n === 1));
+  // Components across edges: the outside and the hole's wall.
+  const parent = O.faces.map((_, i) => i), find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+  const byE = new Map();
+  O.faces.forEach((f, fi) => f.forEach((a, i) => { const b = f[(i + 1) % f.length], k = a < b ? `${a}-${b}` : `${b}-${a}`; if (byE.has(k)) parent[find(fi)] = find(byE.get(k)); else byE.set(k, fi); }));
+  const comps = new Map(); O.faces.forEach((_, i) => comps.set(find(i), [...(comps.get(find(i)) ?? []), i]));
+  const sizes = [...comps.values()].map((c) => c.length).sort((a, b) => a - b);
+  check(`two surfaces: the outside (${sizes[1]} faces) and the hidden hole's wall (${sizes[0]} triangles)`, sizes.length === 2 && sizes[0] === 48 && sizes[1] === 288);
+  // The hole is the odd cell's stella octangula: its wall is the stella's 48 half-triangles.
+  const ST = POLYHEDRA.STELLA_OCTANGULA;
+  const stellaKeys = new Set(ST.faces.map((f) => faceKey(f.map((i) => ST.vertices[i]))));
+  const hole = [...comps.values()].find((c) => c.length === 48);
+  check('the hole is exactly the stella octangula (its 48 half-triangles)', hole.every((fi) => stellaKeys.has(faceKey(O.faces[fi].map((i) => O.vertices[i])))));
+  // Where the two surfaces meet: the stella's 8 spike tips, single points.
+  const holeV = new Set(hole.flatMap((fi) => O.faces[fi])), outV = new Set([...comps.values()].find((c) => c.length === 288).flatMap((fi) => O.faces[fi]));
+  const meet = [...holeV].filter((v) => outV.has(v));
+  check(`the hole touches the outside only at the stella's 8 spike tips (${meet.length} points)`, meet.length === 8 && meet.every((v) => O.vertices[v].every((x) => Math.abs(Math.abs(x) - K) < 1e-9)));
+  check(`volume = 6 DICTO Jewels, the hole empty (${volume(O).toFixed(6)})`, Math.abs(volume(O) - 6 * volume(DJ)) < 1e-9);
+}
+
+// ---- both clusters + stellas fill space: every even cell in exactly one cluster ----
+{
+  const N = 9, cover = (centresOf) => {
+    const count = new Map();
+    for (const site of centresOf) for (const e of site) count.set(e.join(), (count.get(e.join()) ?? 0) + 1);
+    let ok = true, n = 0;
+    for (let x = -N; x <= N; x++) for (let y = -N; y <= N; y++) for (let z = -N; z <= N; z++) {
+      if ((x + y + z) % 2) continue;
+      n++;
+      if ((count.get([x, y, z].join()) ?? 0) !== 1) ok = false;
+    }
+    return { ok, n };
+  };
+  const tetra = [];
+  for (let x = -N - 3; x <= N + 3; x += 2) for (let y = -N - 3; y <= N + 3; y += 2) for (let z = -N - 3; z <= N + 3; z += 2)
+    tetra.push(DJ_TETRA_OFFSETS.map((d) => [x + d[0], y + d[1], z + d[2]]));
+  const t = cover(tetra);
+  check(`tetrahedral clusters + stellas fill space: each of ${t.n} Jewel cells in exactly one cluster`, t.ok);
+  const [a, b, c] = DJ_OCTA_TILING.basis, R = 12, octa = [];
+  for (let i = -R; i <= R; i++) for (let j = -R; j <= R; j++) for (let k = -R; k <= R; k++) {
+    const o = [0, 1, 2].map((m) => DJ_OCTA_TILING.origin[m] + i * a[m] + j * b[m] + k * c[m]);
+    if (o.some((v) => Math.abs(v) > N + 2)) continue;
+    octa.push([[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].map((d) => o.map((v, m) => v + d[m])));
+  }
+  const det = a[0] * (b[1] * c[2] - b[2] * c[1]) - a[1] * (b[0] * c[2] - b[2] * c[0]) + a[2] * (b[0] * c[1] - b[1] * c[0]);
+  const o2 = cover(octa);
+  check(`octahedral clusters + stellas fill space: each of ${o2.n} Jewel cells in exactly one cluster (lattice of ${Math.abs(det)} cells per cluster: 6 Jewels, its own stella and 5 more)`, o2.ok && Math.abs(det) === 12);
+}
 
 console.log(failures === 0 ? '\nAll checks passed (0 failures).' : `\n${failures} check(s) FAILED.`);
 process.exit(failures === 0 ? 0 : 1);
