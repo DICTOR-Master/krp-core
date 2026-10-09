@@ -85,3 +85,10 @@ export function solidsOverlap(a, b, margin) {
   }
   return false;
 }
+
+/** Whether point p is inside a solid ({ vertices, faces }, placed, wound outward). */
+export function insideSolid(solid, p) {
+  const bx = bounds(solid.vertices);
+  if (!bx.every(([lo, hi], k) => p[k] > lo && p[k] < hi)) return false;
+  return Math.abs(winding(p, triangles(solid))) > 0.5;
+}
