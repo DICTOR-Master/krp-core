@@ -22,6 +22,8 @@ no page code, no stored state.
   its gaps as exact pieces, 30 wedges and 20 needles (Kaleidohedra's DISCOVERIES.md #13).
 - DICTO-Star (`id-star.js`): an icosidodecahedron with a dodecahedron on each
   pentagon and a tridiminished icosahedron on each triangle, every edge closed (DISCOVERIES.md #14).
+- The DICTO Jewel tetrahedral cluster (`polyhedra/stellaJewel.js`, DICTO's): four DICTO Jewels
+  meeting pairwise face to face, a shape of its own.
 - Kaleidohedra's lattice shear (`kaleido-lattice.js`): six lattice parameters and the Cell slider.
 - `src/request.js`, `src/retention.js`: objects requested by ID (with a session cache), and kept
   entries (an ID and a fingerprint, checked when reopened).

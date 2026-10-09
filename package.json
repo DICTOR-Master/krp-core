@@ -1,12 +1,12 @@
 {
   "name": "krp-core",
-  "version": "0.7.5",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "description": "KRP core: the geometry shared by Kaleidohedra, Rhombiverse and Polyhedraverse (by DICTO). Plain ES modules, no build step; three.js only for src/assembly.",
   "scripts": {
     "test": "node --test tests/unit/*.test.mjs",
-    "verify": "for s in packing pyrochlore quasicrystal rhombohedra shells roof-fold nets dicto-fcc kaleido dodeca-cluster id-star; do node scripts/verify-$s.mjs || exit 1; done; for t in $(find src -name '*.test.mjs' | sort); do node $t > /dev/null || { echo FAIL $t; exit 1; }; done"
+    "verify": "for s in packing pyrochlore quasicrystal rhombohedra shells roof-fold nets dicto-fcc kaleido dodeca-cluster id-star dicto-jewel-cluster; do node scripts/verify-$s.mjs || exit 1; done; for t in $(find src -name '*.test.mjs' | sort); do node $t > /dev/null || { echo FAIL $t; exit 1; }; done"
   },
   "peerDependencies": {
     "three": ">=0.185.0"
