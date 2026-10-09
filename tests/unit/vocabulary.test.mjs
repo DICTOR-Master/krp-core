@@ -39,7 +39,7 @@ test('EKP objects regenerate with their known measurements', () => {
   assert.ok(near(vol('ekp/octahedron'), 4 / 3));
   assert.ok(near(vol('ekp/stella-octangula'), 2 * (8 / 3)));
   assert.ok(near(vol('ekp/dogstar'), 16 - vol('ekp/dodecahedron')), 'the Dogstar is the hole one dodecahedron leaves per cell');
-  assert.ok(near((vol('ekp/dragon-jewel') - 8) / (vol('ekp/dodecahedron') - 8), 1 / PHI), 'the Dragon Jewel keeps 1/phi of each roof');
+  assert.ok(near((vol('ekp/dragon-jewel') - 8) / (vol('ekp/dodecahedron') - 8), 1 / PHI), 'the DICTO Jewel keeps 1/phi of each roof');
   assert.ok(near(vol('ekp/dragon-jewel'), 12));
   assert.ok(near(vol('ekp/sunstar'), vol('ekp/dodecahedron') + 6 * vol('ekp/dogstar')));
   for (const g of ['ekp/icosahedron', 'ekp/octahedron', 'ekp/dogstar', 'ekp/cube', 'ekp/great-stellated-dodecahedron', 'ekp/dodecahedron', 'ekp/dragon-jewel']) {

@@ -58,9 +58,9 @@ export const EKP_RECORDS = Object.fromEntries(Object.entries({
     history: curated('2026-10-06', 'DISCOVERIES #8 (candidate); the Dogstar joined the wrap order 2026-10-08'),
   },
   'ekp/dragon-jewel': {
-    label: 'Dragon Jewel', make: () => { const W = ekpWindowsSolid(); return [...W.rhombi, ...W.walls]; },
+    label: 'DICTO Jewel', make: () => { const W = ekpWindowsSolid(); return [...W.rhombi, ...W.walls]; },
     novelty: { kind: 'not-found', scope: 'web-level', date: '2026-10-08', ref: EKP_DOI },
-    names: { DICTO: 'Dragon Jewel' }, status: 'Curated',
+    names: { DICTO: 'DICTO Jewel' }, status: 'Curated',
     history: curated('2026-10-08', "DISCOVERIES #10, the EKP windows: the dodecahedron with its six face-neighbours' stella octangulas carved out"),
   },
   'ekp/expanded-windows': {

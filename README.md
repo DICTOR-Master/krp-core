@@ -15,7 +15,7 @@ no page code, no stored state.
   dodecahedron pieces, golden rhombohedra, rock salt, sphere packing, spherical toggle).
 - The Euclid–Kepler–Pacioli cell by DICTO (`roof-fold.js`): the cube, dodecahedron, folded
   icosahedron, octahedron, stella octangula, great stellated dodecahedron, Pacioli's rectangles
-  and the Dogstar, and what is built from them (the Dragon Jewel, the Sunstar and Stella–Jewel
+  and the Dogstar, and what is built from them (the DICTO Jewel, the Sunstar and Stella–Jewel
   Lattices, the studies). Kaleidohedra's DISCOVERIES.md records the findings.
 - Nets (`nets.js`): every solid unfolded flat and folded closed. DICTO FCC (`dicto-fcc.js`).
 - DICTO's 13-dodecahedron cluster (`dodeca-cluster.js`): a dodecahedron with one on each face, and

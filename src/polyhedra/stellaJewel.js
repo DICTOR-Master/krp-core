@@ -90,14 +90,14 @@ function dragonJewelRaw() {
 }
 function dragonJewel() {
   const { verts, faces } = dragonJewelRaw();
-  return specOf('DRAGON_JEWEL', 'Dragon Jewel', verts, faces);
+  return specOf('DRAGON_JEWEL', 'DICTO Jewel', verts, faces);
 }
 function stellaOctangula() {
   // The two tetrahedra's union: 8 spikes, each three triangles from a cube corner to the three
   // octahedron vertices (cube-face centres) beside it. Each triangle is split in two along the
-  // seam where two Dragon Jewels meet on it in the lattice (DICTO, 2026-10-08: "they can't attach
-  // to each other"): from the spike's tip to the Dragon Jewel corner on its far edge. Each half is
-  // then exactly one Dragon Jewel wall, so the two attach face to face.
+  // seam where two DICTO Jewels meet on it in the lattice (DICTO, 2026-10-08: "they can't attach
+  // to each other"): from the spike's tip to the DICTO Jewel corner on its far edge. Each half is
+  // then exactly one DICTO Jewel wall, so the two attach face to face.
   const dj = dragonJewelRaw().verts;
   const neighbourCorners = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].flatMap((e) => dj.map((v) => add(v, e.map((c) => 2 * c))));
   const seamPoint = (a, b) => {

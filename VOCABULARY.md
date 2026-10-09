@@ -122,7 +122,7 @@ study 10a in DISCOVERIES, is in the record.
 
 `src/identity/ekp.js` describes the Euclid–Kepler–Pacioli objects, the test case for these words:
 Pacioli's rectangles, the icosahedron, octahedron, Dogstar, stella octangula, cube, great stellated
-dodecahedron and dodecahedron; the cell itself (its parts, nested); the Dragon Jewel; the expanded
+dodecahedron and dodecahedron; the cell itself (its parts, nested); the DICTO Jewel; the expanded
 windows (a parameterised generator); and the Sunstar (parts, side by side). Credits and statuses
 follow Kaleidohedra's DISCOVERIES.md.
 

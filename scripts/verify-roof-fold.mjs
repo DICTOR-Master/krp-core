@@ -717,10 +717,10 @@ check(`stars on even cells and icosahedra on odd cells share only corners: ${pai
   check(`windows and stellas, checkerboard: each odd cube is its stella + six carved roofs (${N ** 3} points, ${bad} uncovered or doubled); 6 x ${(roof - carved).toFixed(4)} = cube - stella = 4`, bad === 0 && Math.abs(6 * (roof - carved) - 4) < 1e-12 && Math.abs(inStella / N ** 3 - 0.5) < 0.01);
 }
 
-// (g) The Dragon Jewel (DICTO's name for the windows solid on its own, 2026-10-08) and the
+// (g) The DICTO Jewel (DICTO's name for the windows solid on its own, 2026-10-08) and the
 // Stella–Jewel Lattice. Five-fold: each window lies in a dodecahedron face (its normal one of the
 // six five-fold axes); each face has five window positions (one per pentagon diagonal), and the
-// cube picks the one whose diagonal is a cube edge. Dragon Jewels alone on the even cells (FCC)
+// cube picks the one whose diagonal is a cube edge. DICTO Jewels alone on the even cells (FCC)
 // meet face to face on all 12 rhombi. The world's point tests agree with the checkerboard (10b).
 {
   const W = ekpWindowRhombi(), P5 = fiveWindowPositions(), axes = fiveFoldAxes();
@@ -730,10 +730,10 @@ check(`stars on even cells and icosahedra on odd cells share only corners: ${pai
   const nrm = (r) => { const n = cross(sub(r[1], r[0]), sub(r[2], r[0])); return n.map((c) => c / norm(n)); };
   const onAxes = axes.length === 6 && W.every((r) => axes.some((a) => Math.abs(Math.abs(dot(a, nrm(r))) - 1) < 1e-9));
   const thick = P5.every(({ rhombus: [A, V, B] }) => Math.abs(Math.acos(dot(sub(A, V), sub(B, V)) / (norm(sub(A, V)) * norm(sub(B, V)))) * 180 / Math.PI - 108) < 1e-9);
-  check('Dragon Jewel, five-fold: 6 five-fold axes; each face has 5 window positions (thick rhombi on its diagonals), and the cube picks exactly the 12 windows, each facing a five-fold axis', picks && onAxes && thick);
+  check('DICTO Jewel, five-fold: 6 five-fold axes; each face has 5 window positions (thick rhombi on its diagonals), and the cube picks exactly the 12 windows, each facing a five-fold axis', picks && onAxes && thick);
   const FCC = DJ_NEIGHBOURS.slice(6);
   const faceToFace = W.every((r) => FCC.some((s) => W.some((w) => sameSet(r, w.map((p) => p.map((c, i) => c + 2 * s[i]))))));
-  check('Dragon Jewels alone on the even cells (FCC) meet face to face on all 12 rhombi', faceToFace);
+  check('DICTO Jewels alone on the even cells (FCC) meet face to face on all 12 rhombi', faceToFace);
   const N = 24;
   let bad = 0;
   for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) for (let k = 0; k < N; k++) {
@@ -742,7 +742,7 @@ check(`stars on even cells and icosahedra on odd cells share only corners: ${pai
     const dj = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].filter((d) => insideDragonJewel(q.map((c, a) => c - 2 * d[a]))).length;
     if ((st ? 1 : 0) + dj !== 1) bad++;
   }
-  check(`Stella–Jewel Lattice point tests: each point of an odd cube is in its stella octangula or exactly one neighbouring Dragon Jewel (${N ** 3} points, ${bad} wrong)`, bad === 0);
+  check(`Stella–Jewel Lattice point tests: each point of an odd cube is in its stella octangula or exactly one neighbouring DICTO Jewel (${N ** 3} points, ${bad} wrong)`, bad === 0);
 }
 
 // (h) The Dogstar (DICTO, 2026-10-08; DICTO's name, first called the gap star; a dodecahedron with its Dogstars round it is a Sunstar): the hole left in each odd cell by regular dodecahedra on the
@@ -830,19 +830,19 @@ check(`stars on even cells and icosahedra on odd cells share only corners: ${pai
   check(`nested Sunstar chain: the great star's ${S.star.faces.length} faces all lie on the 1/phi^3 core's planes, and the 1/phi^3 Sunstar fits inside it with no room to grow (largest scale ${lo.toFixed(9)})`, starOnCore && Math.abs(lo - 1) < 1e-6);
 }
 
-// (l) The Dragon chain (study 12a, DICTO, 2026-10-08): Dragon Jewel > cube > stella octangula > Dogstar >
-// dodecahedron(1/phi^3) > Dragon Jewel(1/phi^3) > ..., every step touching: the largest scale at which
+// (l) The Dragon chain (study 12a, DICTO, 2026-10-08): DICTO Jewel > cube > stella octangula > Dogstar >
+// dodecahedron(1/phi^3) > DICTO Jewel(1/phi^3) > ..., every step touching: the largest scale at which
 // each fits inside the one before is exactly 1.
 {
   const S = roofFoldSolids(), k = 1 / PHI ** 3, W = ekpWindowsSolid();
   const sample = (faces, s = 1) => { const out = []; for (const f of faces) for (let m = 1; m + 1 < f.length; m++) for (let a = 0; a <= 6; a++) for (let b = 0; a + b <= 6; b++) out.push(f[0].map((c, i) => (c + (f[m][i] - f[0][i]) * a / 6 + (f[m + 1][i] - f[0][i]) * b / 6) * s)); return out; };
   const cubeCorners = [...Array(8)].map((_, i) => [i & 1 ? 1 : -1, i & 2 ? 1 : -1, i & 4 ? 1 : -1]);
   const steps = [
-    ['cube', cubeCorners, 'Dragon Jewel', (p) => insideDragonJewel(p)],
+    ['cube', cubeCorners, 'DICTO Jewel', (p) => insideDragonJewel(p)],
     ['stella', sample(S.stella.faces), 'cube', (p) => p.every((c) => Math.abs(c) <= 1 + 1e-12)],
     ['Dogstar', sample(dogstarSolid()), 'stella', (p) => insideStella(p)],
     ['dodecahedron(1/phi^3)', sample(S.dodeca.faces, k), 'Dogstar', (p) => insideDogstar(p)],
-    ['Dragon Jewel(1/phi^3)', sample([...W.rhombi, ...W.walls], k), 'dodecahedron(1/phi^3)', (p) => insideDodecahedron(p.map((c) => c / k))],
+    ['DICTO Jewel(1/phi^3)', sample([...W.rhombi, ...W.walls], k), 'dodecahedron(1/phi^3)', (p) => insideDodecahedron(p.map((c) => c / k))],
   ];
   const results = steps.map(([a, pts, b, inside]) => {
     let lo = 0, hi = 3;

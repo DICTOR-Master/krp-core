@@ -495,10 +495,10 @@ export function rdMorphRhombi(s) {
   });
 }
 
-// ---- The Dragon Jewel (DJ) and the Stella–Jewel Lattice (DICTO, 2026-10-08) ----
-// The Dragon Jewel is DICTO's name for the windows solid (ekpWindowsSolid, DISCOVERIES #10)
-// on its own. Dragon Jewels on the even cells and stella octangulas on the odd cells fill
-// space (study 10b); the Dragon Jewels alone sit on the even cells (an FCC lattice) and
+// ---- The DICTO Jewel (DJ) and the Stella–Jewel Lattice (DICTO, 2026-10-08) ----
+// The DICTO Jewel is DICTO's name for the windows solid (ekpWindowsSolid, DISCOVERIES #10)
+// on its own. DICTO Jewels on the even cells and stella octangulas on the odd cells fill
+// space (study 10b); the DICTO Jewels alone sit on the even cells (an FCC lattice) and
 // meet face to face on all 12 rhombi, leaving stella-shaped holes.
 
 /** Half-spaces [n, d] (n . p <= d) of a convex solid given by its outward-wound faces. */
@@ -519,7 +519,7 @@ function djParts() {
   djCache = { tetra, dodecaH, neighbourTetra };
   return djCache;
 }
-/** Is p (cell units, centred on the cell) inside the Dragon Jewel? */
+/** Is p (cell units, centred on the cell) inside the DICTO Jewel? */
 export function insideDragonJewel(p) {
   const { dodecaH, neighbourTetra } = djParts();
   return insideAll(dodecaH, p) && !neighbourTetra.some((H) => insideAll(H, p, -1e-9));
