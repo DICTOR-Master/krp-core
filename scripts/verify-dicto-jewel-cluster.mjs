@@ -10,6 +10,8 @@
 // hidden stella octangula-shaped hole, sealed but for its 8 spike tips; volume six Jewels.
 // Both fill space with stella octangulas: every Jewel (even cell) in exactly one cluster, stellas in
 // the other cells (Jewels and stellas fill space: verify-roof-fold.mjs).
+// As a shared network (DICTO's octet idea): the clusters are the cells of the octet truss on the
+// Jewels' lattice, sharing Jewels, every stella hidden inside an octahedral cluster.
 import { POLYHEDRA } from '../src/polyhedra/index.js';
 import { DJ_TETRA_CENTRES, DJ_OCTA_CENTRES, DJ_TETRA_OFFSETS, DJ_OCTA_TILING } from '../src/polyhedra/stellaJewel.js';
 
@@ -162,6 +164,39 @@ check(`volume = 4 DICTO Jewels (${volume(C).toFixed(6)} = 4 x ${volume(DJ).toFix
   const det = a[0] * (b[1] * c[2] - b[2] * c[1]) - a[1] * (b[0] * c[2] - b[2] * c[0]) + a[2] * (b[0] * c[1] - b[1] * c[0]);
   const o2 = cover(octa);
   check(`octahedral clusters + stellas fill space: each of ${o2.n} Jewel cells in exactly one cluster (lattice of ${Math.abs(det)} cells per cluster: 6 Jewels, its own stella and 5 more)`, o2.ok && Math.abs(det) === 12);
+}
+
+// ---- the octet network (DICTO, 2026-10-09): clusters as the octet truss's cells, sharing Jewels ----
+{
+  const M = 4;
+  const ev = [], od = [];
+  for (let x = -M; x <= M; x++) for (let y = -M; y <= M; y++) for (let z = -M; z <= M; z++) ((x + y + z) % 2 ? od : ev).push([x, y, z]);
+  const AX = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+  // tetrahedral clusters: the four even cells round each cell corner (half-integer point)
+  const tets = [], octs = [];
+  for (let x = -M; x < M; x++) for (let y = -M; y < M; y++) for (let z = -M; z < M; z++) {
+    const around = [];
+    for (const dx of [0, 1]) for (const dy of [0, 1]) for (const dz of [0, 1]) around.push([x + dx, y + dy, z + dz]);
+    tets.push(around.filter((c) => (c[0] + c[1] + c[2]) % 2 === 0).map((c) => c.join()));
+  }
+  for (const o of od) octs.push(AX.map((d) => o.map((v, i) => v + d[i]).join()));
+  const inner = ev.filter((c) => c.every((v) => Math.abs(v) <= M - 2)).map((c) => c.join());
+  const inT = (j) => tets.filter((t) => t.includes(j)).length, inO = (j) => octs.filter((o) => o.includes(j)).length;
+  check('each Jewel is in 8 tetrahedral and 6 octahedral clusters, as each octet-truss vertex is in 8 tetrahedra and 6 octahedra', inner.every((j) => inT(j) === 8 && inO(j) === 6));
+  // shared faces: a tetrahedral and an octahedral cluster that meet share exactly 3 Jewels (a triangle)
+  const isTetraShape = (t) => t.length === 4;
+  let pairs = 0, faces3 = 0;
+  for (const t of tets.slice(0, 200)) for (const o of octs) {
+    const n = t.filter((j) => o.includes(j)).length;
+    if (n > 0) { pairs++; if (n === 3) faces3++; }
+  }
+  const tt = tets.slice(0, 200).every(isTetraShape);
+  // a tetra and an octa meeting at a single Jewel (a corner) are vertex neighbours in the truss too; face neighbours share 3
+  check(`tetrahedral and octahedral clusters meet as octet cells: sharing 3 Jewels (a face) or 1 (a corner), never 2 (${faces3} face pairs)`, tt && tets.slice(0, 200).every((t) => octs.every((o) => [0, 1, 3].includes(t.filter((j) => o.includes(j)).length))));
+  // every stella is the hidden hole of exactly one octahedral cluster: its own odd cell is that cluster's centre
+  check('every stella octangula is the hidden hole of exactly one octahedral cluster (its own cell the centre)', od.every((o) => octs.filter((c, i) => od[i] === o).length === 1));
+  // with the octahedral clusters solid inside, they cover every cell: each even cell is in one, each odd cell is one's centre
+  check('the filled octahedral clusters, sharing Jewels, cover all of space (every Jewel cell and every stella cell)', inner.every((j) => inO(j) >= 1) && od.length === octs.length);
 }
 
 console.log(failures === 0 ? '\nAll checks passed (0 failures).' : `\n${failures} check(s) FAILED.`);
