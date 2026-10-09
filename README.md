@@ -25,6 +25,8 @@ no page code, no stored state.
 - DICTO's clusters of DICTO Jewels (`polyhedra/stellaJewel.js`): the tetrahedral (4 Jewels) and the
   octahedral (6 Jewels round a hidden stella-shaped hole), shapes of their own; each fills space
   with stella octangulas.
+- DICTO's clusters of the Sunstar Lattice's dodecahedra (`polyhedra/sunstar.js`): tetrahedral (4) and
+  octahedral (6 round a hidden Dogstar), the same octet structure; each fills space with Dogstars.
 - Kaleidohedra's lattice shear (`kaleido-lattice.js`): six lattice parameters and the Cell slider.
 - `src/request.js`, `src/retention.js`: objects requested by ID (with a session cache), and kept
   entries (an ID and a fingerprint, checked when reopened).

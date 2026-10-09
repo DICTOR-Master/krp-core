@@ -234,9 +234,11 @@ const EXTRA_MEMBERSHIP = [
   { id: 'D12', family: 'JOHNSON' },
   { id: 'D14', family: 'JOHNSON' },
   { id: 'D16', family: 'JOHNSON' },
-  // DICTO's clusters of DICTO Jewels (pieces of their own, not space-filling pairs).
+  // DICTO's clusters of DICTO Jewels and of the Sunstar Lattice's dodecahedra (pieces of their own).
   { id: 'DJ_TETRAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
   { id: 'DJ_OCTAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
+  { id: 'DODECA_TETRAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
+  { id: 'DODECA_OCTAHEDRAL_CLUSTER', family: 'MISCELLANEOUS' },
 ];
 const membershipMap = (() => {
   const m = new Map();

@@ -79,8 +79,9 @@ function seam(faces, all) {
   }
   return out;
 }
-/** A spec from world-unit faces centred on `centre`: vertices merged, scaled to dodecahedron edge 1, wound outward. */
-function specOf(id, name, faces, centre) {
+/** A spec from world-unit faces centred on `centre`: vertices merged, scaled to dodecahedron edge 1, wound outward
+ *  (or, `oriented`, already wound outward: a cluster's faces, each wound against its own convex piece). */
+function specOf(id, name, faces, centre, oriented = false) {
   const verts = [];
   const at = (p) => { let i = verts.findIndex((q) => Math.hypot(...sub(p, q)) < 1e-7); if (i < 0) {
     verts.push(p);
@@ -106,6 +107,8 @@ function specOf(id, name, faces, centre) {
   const byEdge = new Map();
   idx.forEach((f, i) => f.forEach((a, j) => { const b = f[(j + 1) % f.length]; const k = a < b ? `${a}-${b}` : `${b}-${a}`; byEdge.set(k, [...(byEdge.get(k) ?? []), i]); }));
   for (let start = 0; start < idx.length; start++) {
+    if (oriented)
+      break;
     if (done[start])
       continue;
     done[start] = true;
@@ -128,7 +131,7 @@ function specOf(id, name, faces, centre) {
   }
   const vol = idx.reduce((t, f) => { for (let m = 1; m + 1 < f.length; m++)
     t += dot(verts[f[0]], cross(verts[f[m]], verts[f[m + 1]])); return t; }, 0);
-  if (vol < 0)
+  if (vol < 0 && !oriented)
     idx.forEach((f) => f.reverse());
   const scaled = verts.map((v) => scale(v, K));
   const edgeSet = new Map();
@@ -137,8 +140,35 @@ function specOf(id, name, faces, centre) {
   return { id, name, faceCount: idx.length, vertices: scaled, edges, faces: idx, connectors: buildConnectors(scaled, edges), attachableFaceIndices: idx.map((_, i) => i) };
 }
 const ALL = packingFaces();
+// DICTO's clusters of the Sunstar Lattice's dodecahedra (DICTO, 2026-10-09; the same octet structure
+// as the DICTO Jewel clusters): dodecahedra on even cells meeting on parts of faces, cut by the
+// seaming into matching cells, which are inside; each face wound against its own (convex) dodecahedron.
+// - Tetrahedral: four dodecahedra round a cell corner, where four Dogstar tips meet.
+// - Octahedral: the six dodecahedra round an odd cell, enclosing that cell's Dogstar as a hidden hole
+//   (sealed but for the Dogstar's 8 tips). A Sunstar is a dodecahedron with its 6 Dogstars; this is a
+//   Dogstar with its 6 dodecahedra. Checked in scripts/verify-sunstar-cluster.mjs.
+export const DODECA_TETRA_CENTRES = [[0, 0, 0], [1, 1, 0], [1, 0, 1], [0, 1, 1]]; // cells (world = 2x)
+export const DODECA_OCTA_CENTRES = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+function dodecaCluster(id, name, cells) {
+  const faces = [];
+  for (const cell of cells) {
+    const c = scale(cell, 2);
+    for (const f of seam(DODECA.map((g) => g.map((p) => add(p, c))), ALL)) {
+      const n = cross(sub(f[1], f[0]), sub(f[2], f[0]));
+      const m = f.reduce((t, p) => add(t, scale(p, 1 / f.length)), [0, 0, 0]);
+      faces.push(dot(n, sub(m, c)) < 0 ? [...f].reverse() : f);
+    }
+  }
+  const key = (f) => f.map((p) => p.map((x) => x.toFixed(6)).join(',')).sort().join('|');
+  const count = new Map();
+  for (const f of faces) count.set(key(f), (count.get(key(f)) ?? 0) + 1);
+  const centre = scale(cells.reduce((t, p) => add(t, p), [0, 0, 0]), 2 / cells.length);
+  return specOf(id, name, faces.filter((f) => count.get(key(f)) === 1), centre, true);
+}
 export const SUNSTAR_ADDITIONS = {
   SEAMED_DODECAHEDRON: specOf('SEAMED_DODECAHEDRON', 'Dodecahedron, seamed for Dogstars', seam(DODECA, ALL), [0, 0, 0]),
   DOGSTAR: specOf('DOGSTAR', 'Dogstar', seam(DOGSTAR.map((f) => f.map((p) => add(p, [2, 0, 0]))), ALL), [2, 0, 0]),
+  DODECA_TETRAHEDRAL_CLUSTER: dodecaCluster('DODECA_TETRAHEDRAL_CLUSTER', 'Sunstar tetrahedral cluster (4 dodecahedra)', DODECA_TETRA_CENTRES),
+  DODECA_OCTAHEDRAL_CLUSTER: dodecaCluster('DODECA_OCTAHEDRAL_CLUSTER', 'Sunstar octahedral cluster (6 dodecahedra round a Dogstar)', DODECA_OCTA_CENTRES),
 };
 export const SUNSTAR_ADDITION_IDS = Object.keys(SUNSTAR_ADDITIONS);
