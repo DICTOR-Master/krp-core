@@ -6,7 +6,7 @@ const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const signs = [1, -1];
-export function specOf(id, name, verts, faces, oriented = false) {
+export function specOf(id, name, verts, faces, oriented = false, scale = K) {
   // Wind every face outward: consistently across shared edges (neighbours run a shared edge in
   // opposite directions), then all flipped together if the enclosed volume came out negative.
   // (These solids are concave, so no face can be tested against the centre on its own.)
@@ -39,7 +39,7 @@ export function specOf(id, name, verts, faces, oriented = false) {
     t += dot(verts[f[0]], cross(verts[f[m]], verts[f[m + 1]])); return t; }, 0) / 6;
   if (volume < 0)
     out.forEach((f) => f.reverse());
-  const scaled = verts.map((v) => v.map((c) => c * K));
+  const scaled = verts.map((v) => v.map((c) => c * scale));
   const edgeSet = new Map();
   out.forEach((f) => f.forEach((a, j) => { const b = f[(j + 1) % f.length]; edgeSet.set(a < b ? `${a}-${b}` : `${b}-${a}`, a < b ? [a, b] : [b, a]); }));
   const edges = [...edgeSet.values()];
