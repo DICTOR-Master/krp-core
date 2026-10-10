@@ -94,5 +94,10 @@ for (const k of ICOSA_CLUSTER_KEYS) for (const [view, want] of Object.entries(CO
   const sumOk = total === undefined || Math.abs(vol - total) < 1e-4;
   check(`${ICOSA_NAMES[k]} / ${view}: ${parts.length} parts ${sorted(got)}, each closed and outward, ${allConvex ? 'convex, overlapping pairs' : 'not all convex, surface-and-volume check failures'} ${n}, total ${vol.toFixed(6)}${total === undefined ? ' (open cluster)' : ` (want ${total.toFixed(6)})`}`, sorted(got) === sorted(want) && each && n === 0 && sumOk);
 }
+{ // the edge roof, in Polyhedraverse: 6 on an icosahedron make the octahedron
+  const { POLYHEDRA } = await import('../src/polyhedra/index.js'); const R = POLYHEDRA.DICTO_EDGE_ROOF; const m = measure(R);
+  const eq = R.faces.filter((f) => f.length === 3 && f.every((a, i) => Math.abs(len(sub(R.vertices[a], R.vertices[f[(i + 1) % 3]])) - 1) < 1e-6)).length;
+  check(`Edge roof (Polyhedraverse): closed, outward, Euler ${m.euler}, volume ${m.vol.toFixed(6)} (want phi/12 = ${((1 + S5) / 24).toFixed(6)}), unit equilateral faces ${eq} (want 2)`, m.closed && m.euler === 2 && Math.abs(m.vol - (1 + S5) / 24) < 1e-6 && eq === 2);
+}
 console.log(failures ? `${failures} failures.` : 'All checks passed (0 failures).');
 process.exit(failures ? 1 : 0);

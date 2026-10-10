@@ -19,6 +19,7 @@ export { APERIODIC_ADDITIONS, APERIODIC_ADDITION_IDS, APERIODIC_PAIRS } from './
 export { STELLA_JEWEL_ADDITIONS, STELLA_JEWEL_ADDITION_IDS } from './stellaJewel.js';
 export { SUNSTAR_ADDITIONS, SUNSTAR_ADDITION_IDS } from './sunstar.js';
 export { HEXA_ADDITIONS, HEXA_ADDITION_IDS, HEXA_PARTS, HEXA_VOLUMES } from './hexa.js';
+export { EDGE_ROOF_ADDITIONS, EDGE_ROOF_ADDITION_IDS } from './edgeRoof.js';
 export { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS, BRIDGES_3D_IDS } from './bridges.js';
 export { STELLATION_ADDITIONS, STELLATION_IDS, stellationInfo } from './stellations/index.js';
 export { isFaceEligibleForAttach } from './attachEligibility.js';
