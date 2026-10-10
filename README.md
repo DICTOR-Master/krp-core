@@ -22,6 +22,11 @@ no page code, no stored state.
   its gaps as exact pieces, 30 wedges and 20 needles (Kaleidohedra's DISCOVERIES.md #13).
 - DICTO-Star (`id-star.js`): an icosidodecahedron with a dodecahedron on each
   pentagon and a tridiminished icosahedron on each triangle, every edge closed (DISCOVERIES.md #14).
+- The DICTO Icosa family (`icosa.js`, names by DICTO): the Lotus seed (an icosahedron of edge φ² cut into 12
+  icosahedra, one small one and the gap pieces AXE, FUJI and CLEO, or built as a dodecahedron + 12 J11 + AXE +
+  FUJI), UNITY, VAJRA and Venus (Fly Trap), the DICTO Stella-Corona with its King of Pentacles, the Kepler Star
+  and Kepler Star Diadem (its gaps filled by 120 Shark Teeth), and the open clusters DESHI, 12-Star voids and
+  KEPLER MACE, with parts views (Kaleidohedra's DISCOVERIES.md #19, #20). Shown in Kaleidohedra's DICTO Icosa world.
 - DICTO's clusters of DICTO Jewels (`polyhedra/stellaJewel.js`): the tetrahedral (4 Jewels) and the
   octahedral (6 Jewels round a stella octangula, solid), shapes of their own; each fills space
   with stella octangulas.
