@@ -10,5 +10,10 @@ import { specOf } from './stellaJewel.js';
 
 const V = [[0.809016994, 0, -0.5], [0.809016994, 0, 0.5], [1.309016994, 0, 0], [0.5, -0.809016994, 0], [0.5, 0.809016994, 0]];
 const F = [[2, 1, 3], [2, 3, 0], [1, 0, 3], [2, 4, 1], [2, 0, 4], [4, 0, 1]];
-export const EDGE_ROOF_ADDITIONS = { DICTO_EDGE_ROOF: specOf('DICTO_EDGE_ROOF', 'Admiral Cap', V, F, false, 1) };
+const CAP = specOf('DICTO_EDGE_ROOF', 'Admiral Cap', V, F, false, 1);
+// Its two equilateral faces sit on the icosahedron and take nothing else (DICTO 2026-10-13: a tetrahedron there looked safe and
+// led nowhere): faceMates, face index -> the only shapes that may meet it.
+const side = (f, i) => Math.hypot(...[0, 1, 2].map((k) => CAP.vertices[f[i]][k] - CAP.vertices[f[(i + 1) % f.length]][k]));
+CAP.faceMates = Object.fromEntries(CAP.faces.map((f, i) => [i, f]).filter(([, f]) => f.every((_, j) => Math.abs(side(f, j) - 1) < 1e-6)).map(([i]) => [i, ['D20']]));
+export const EDGE_ROOF_ADDITIONS = { DICTO_EDGE_ROOF: CAP };
 export const EDGE_ROOF_ADDITION_IDS = Object.keys(EDGE_ROOF_ADDITIONS);
