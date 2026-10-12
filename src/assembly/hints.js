@@ -47,7 +47,21 @@ const DODECA13_RULE = [
   ...[-1, 1].flatMap((x) => [-1, 1].flatMap((y) => [-1, 1].map((z) => ({ shape: 'DICTO_DODECA13', offset: [x, y, z].map((c) => (c * BCC_A) / 2), quaternion: IDENTITY })))),
 ];
 
+// The Admiral Cap (DICTO 2026-10-13: "needs a helper outline"): six caps on the icosahedron's six edges parallel to the axes make
+// the regular octahedron of edge phi^2/sqrt2 (edgeRoof.js). The cap's own frame is the icosahedron's (D20, edge 1, centred), its
+// apex on +x; the others are the same cap turned by pi about z (to -x) and by the icosahedron's three-fold turn x -> y -> z.
+// All seven pieces share one origin, the icosahedron's centre.
+const CYCLE = [0.5, 0.5, 0.5, 0.5]; // 120 degrees about (1,1,1): x -> y -> z -> x
+const HALF_Z = [0, 0, 1, 0];
+const qm = ([ax, ay, az, aw], [bx, by, bz, bw]) => [aw * bx + ax * bw + ay * bz - az * by, aw * by - ax * bz + ay * bw + az * bx, aw * bz + ax * by - ay * bx + az * bw, aw * bw - ax * bx - ay * by - az * bz];
+const CAP_TURNS = [IDENTITY, HALF_Z, CYCLE, qm(CYCLE, HALF_Z), qm(CYCLE, CYCLE), qm(qm(CYCLE, CYCLE), HALF_Z)];
+const ADMIRAL_CAPS = CAP_TURNS.map((quaternion) => ({ shape: 'DICTO_EDGE_ROOF', offset: [0, 0, 0], quaternion }));
+const ADMIRAL_RULE = [{ shape: 'D20', offset: [0, 0, 0], quaternion: IDENTITY }, ...ADMIRAL_CAPS.slice(1)];
+// Pieces whose pattern shares one origin: a slot there is only "taken" by the same piece in the same turn.
+const SHARED_ORIGIN = new Set(['DICTO_EDGE_ROOF', 'D20']);
+
 export const HINT_RULES = {
+  DICTO_EDGE_ROOF: ADMIRAL_RULE,
   DICTO_HEXA: hexaRule('DICTO_HEXA', 'DICTO_HEXA_KEY'),
   DICTO_HEXA_KEY: hexaRule('DICTO_HEXA_KEY', 'DICTO_HEXA'),
   DICTO_DODECA13: DODECA13_RULE,
@@ -65,7 +79,9 @@ const rulesOf = (pair, specs) => { if (!honeycombCache.has(pair.honeycomb)) hone
 function rulesFor(nodes, specs) {
   const present = new Set(nodes.map((n) => n.shape));
   const active = HONEYCOMB_PAIRS.filter((p) => p.ids.every((id) => present.has(id)) || p.ids.some((id) => present.has(id) && pairsOf(id).length === 1));
-  return (shape) => [...(HINT_RULES[shape] ?? []), ...active.filter((p) => p.ids.includes(shape)).flatMap((p) => rulesOf(p, specs)[shape] ?? [])];
+  // An icosahedron in a build with an Admiral Cap shows the six cap places (alone, it has no pattern).
+  const extra = (shape) => (shape === 'D20' && present.has('DICTO_EDGE_ROOF') ? ADMIRAL_CAPS : []);
+  return (shape) => [...(HINT_RULES[shape] ?? []), ...extra(shape), ...active.filter((p) => p.ids.includes(shape)).flatMap((p) => rulesOf(p, specs)[shape] ?? [])];
 }
 /** Whether a build has any piece with hints (its own pattern, or an active pair's). */
 export function hasHints(nodes, specs) {
@@ -122,7 +138,9 @@ export function hintSlots(nodes, specs, { cap = 12, near } = {}) {
   const out = [];
   for (const s of slots) {
     if (out.length >= cap) break;
-    if (nodes.some((n) => close(n.transform.position, s.position, 1e-4))) continue; // a piece is there
+    const taken = (n) => close(n.transform.position, s.position, 1e-4)
+      && (!(SHARED_ORIGIN.has(n.shape) && SHARED_ORIGIN.has(s.shape)) || (n.shape === s.shape && sameTurn(n.transform.quaternion, s.quaternion)));
+    if (nodes.some(taken)) continue; // a piece is there
     let cached = null;
     const mine = { get vertices() { return (cached ??= placedSolid(specs[s.shape], s.position, s.quaternion)).vertices; }, get faces() { return specs[s.shape].faces; }, get samples() { return (cached ??= placedSolid(specs[s.shape], s.position, s.quaternion)).samples; } };
     // Pieces too far apart to touch (their bounding spheres apart) need no test.
