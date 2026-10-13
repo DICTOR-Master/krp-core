@@ -17,7 +17,7 @@ const scale = (a, s) => [a[0] * s, a[1] * s];
 const len = (a) => Math.hypot(a[0], a[1]);
 const area = (P) => P.reduce((s, p, i) => { const q = P[(i + 1) % P.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0) / 2;
 /** The net laid out on the page: polygons in points, plus its pieces. */
-export function layoutNet(net, tabs) {
+export function layoutNet(net, tabs, fixedK = null) {
   // Turn the net so its longer side runs down the page, then fit it.
   let flat = net.flat;
   const span = (P) => { const xs = P.flat().map((p) => p[0]), ys = P.flat().map((p) => p[1]); return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) }; };
@@ -33,7 +33,8 @@ export function layoutNet(net, tabs) {
   const pad = tabs ? 1 : 0;
   const k0 = Math.min(w / (b.x1 - b.x0), h / (b.y1 - b.y0));
   const tabUnits = (TAB_MM * MM) / k0;
-  const k = Math.min(w / (b.x1 - b.x0 + 2 * pad * tabUnits), h / (b.y1 - b.y0 + 2 * pad * tabUnits));
+  // A set of pieces printed together shares one scale (fixedK, points per unit) so the pieces fit each other (DICTO 2026-10-13).
+  const k = fixedK ?? Math.min(w / (b.x1 - b.x0 + 2 * pad * tabUnits), h / (b.y1 - b.y0 + 2 * pad * tabUnits));
   const ox = MARGIN + (w - (b.x1 - b.x0) * k) / 2 - b.x0 * k;
   const oy = MARGIN + HEADER + (h - (b.y1 - b.y0) * k) / 2 - b.y0 * k;
   const page = flat.map((P) => P.map(([x, y]) => [ox + x * k, oy + y * k]));
@@ -62,14 +63,14 @@ export function layoutNet(net, tabs) {
       placed.push(T);
     }
   }
-  return { page, side, tabs: tabsOut, edgeMm, ccw };
+  return { page, side, tabs: tabsOut, edgeMm, ccw, k };
 }
 // ---- a minimal PDF writer ----
 const fmt = (x) => (Math.round(x * 100) / 100).toString();
 /** Text for a PDF string in WinAnsi: plain ASCII, with dashes and quotes simplified. */
 const pdfText = (s) => s.replace(/[–—]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/φ/g, 'phi').replace(/[^\x20-\x7e]/g, '?').replace(/([\\()])/g, '\\$1');
 export function printableNetPdf(net, opts) {
-  const { page, side, tabs, edgeMm, ccw } = layoutNet(net, opts.tabs);
+  const { page, side, tabs, edgeMm, ccw, k } = layoutNet(net, opts.tabs, opts.k ?? null);
   const Y = (y) => A4.h - y; // PDF y runs up the page
   const cmds = [];
   const path = (P, close = true) => P.map((p, i) => `${fmt(p[0])} ${fmt(Y(p[1]))} ${i ? 'l' : 'm'}`).join(' ') + (close ? ' h' : '');
@@ -110,7 +111,9 @@ export function printableNetPdf(net, opts) {
     }
   // Header: the shape's name, the edge length, and how to use it.
   cmds.push(`0 g /F1 13 Tf 1 0 0 1 ${fmt(MARGIN)} ${fmt(A4.h - MARGIN - 4)} Tm (${pdfText(opts.title)}) Tj`);
-  const note = `Edge ${edgeMm.toFixed(1)} mm (shortest). Cut solid lines, fold dashed lines, glue each number to its match.${opts.tabs ? ' Grey tabs go inside.' : ''}`;
+  const note = opts.k
+    ? `Shortest edge ${edgeMm.toFixed(1)} mm; 1 unit = ${(k / MM).toFixed(1)} mm on every sheet of the set. Cut solid, fold dashed, glue numbers to matches.${opts.tabs ? ' Tabs inside.' : ''}`
+    : `Edge ${edgeMm.toFixed(1)} mm (shortest). Cut solid lines, fold dashed lines, glue each number to its match.${opts.tabs ? ' Grey tabs go inside.' : ''}`;
   cmds.push(`0.35 g /F1 8 Tf 1 0 0 1 ${fmt(MARGIN)} ${fmt(A4.h - MARGIN - 16)} Tm (${pdfText(note)}) Tj`);
   if (opts.credit)
     cmds.push(`0.5 g /F1 7 Tf 1 0 0 1 ${fmt(MARGIN)} ${fmt(MARGIN - 18)} Tm (${pdfText(opts.credit)}) Tj`);

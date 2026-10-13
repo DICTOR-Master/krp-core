@@ -11,14 +11,17 @@ export interface PrintableOptions {
   title: string;
   tabs: boolean;
   credit?: string;
+  /** One scale (page points per unit) shared by a set of pieces printed together. */
+  k?: number;
 }
 /** The net laid out on the page: polygons in points, plus its pieces. */
-export declare function layoutNet(net: Net, tabs: boolean): {
+export declare function layoutNet(net: Net, tabs: boolean, fixedK?: number | null): {
   page: P2[][];
   side: (f: number, j: number) => [P2, P2];
   tabs: P2[][];
   edgeMm: number;
   ccw: boolean;
+  k: number;
 };
 export declare function printableNetPdf(net: Net, opts: PrintableOptions): Uint8Array<ArrayBuffer>;
 export {};
