@@ -20,6 +20,7 @@ import { HEXA_ADDITIONS, HEXA_ADDITION_IDS } from './hexa.js';
 import { DODECA13_ADDITIONS, DODECA13_ADDITION_IDS } from './dodeca13.js';
 import { EDGE_ROOF_ADDITIONS, EDGE_ROOF_ADDITION_IDS } from './edgeRoof.js';
 import { KIT13_ADDITIONS, KIT13_ADDITION_IDS } from './kits13.js';
+import { TRANSITIONAL_ADDITIONS, TRANSITIONAL_IDS } from './transitional.js';
 import { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS } from './bridges.js';
 import { STELLATION_ADDITIONS, STELLATION_IDS } from './stellations/index.js';
 export * from './core.js';
@@ -37,6 +38,7 @@ export { HEXA_ADDITIONS, HEXA_ADDITION_IDS, HEXA_PARTS, HEXA_VOLUMES } from './h
 export { DODECA13_ADDITIONS, DODECA13_ADDITION_IDS, DODECA13_PARTS, DODECA13_VOLUMES } from './dodeca13.js';
 export { EDGE_ROOF_ADDITIONS, EDGE_ROOF_ADDITION_IDS } from './edgeRoof.js';
 export { KIT13_ADDITIONS, KIT13_ADDITION_IDS, KITS13 } from './kits13.js';
+export { TRANSITIONAL_ADDITIONS, TRANSITIONAL_IDS } from './transitional.js';
 export { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS, BRIDGES_3D_IDS } from './bridges.js';
 export { STELLATION_ADDITIONS, STELLATION_IDS, stellationInfo } from './stellations/index.js';
 export { isFaceEligibleForAttach } from './attachEligibility.js';
@@ -55,6 +57,7 @@ export const POLYHEDRA = {
   ...DODECA13_ADDITIONS,
   ...EDGE_ROOF_ADDITIONS,
   ...KIT13_ADDITIONS,
+  ...TRANSITIONAL_ADDITIONS,
   ...BRIDGE_ADDITIONS,
   ...STELLATION_ADDITIONS,
 };
@@ -73,6 +76,7 @@ export const POLYHEDRON_IDS = [
   ...DODECA13_ADDITION_IDS,
   ...EDGE_ROOF_ADDITION_IDS,
   ...KIT13_ADDITION_IDS,
+  ...TRANSITIONAL_IDS,
   ...BRIDGE_ADDITION_IDS,
   ...STELLATION_IDS,
 ];

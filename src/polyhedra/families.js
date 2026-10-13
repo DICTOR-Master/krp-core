@@ -18,6 +18,7 @@ import { POLYTOPE_4D_IDS } from './polytopes4d.js';
 import { APERIODIC_ADDITION_IDS, APERIODIC_PAIRS } from './aperiodic.js';
 import { BRIDGES_3D_IDS } from './bridges.js';
 import { STELLATION_IDS } from './stellations/index.js';
+import { TRANSITIONAL_IDS } from './transitional.js';
 import { RD_TARGET_ADDITION_IDS } from './miscellaneous/rd-targets/index.js';
 import { HEX_TARGET_ADDITION_IDS } from './miscellaneous/hex-targets/index.js';
 // Parallelohedra + Space-Filling Pairs moved up next to the classical
@@ -26,7 +27,7 @@ import { HEX_TARGET_ADDITION_IDS } from './miscellaneous/hex-targets/index.js';
 // companions are headline results, not catch-all add-ons. Wheel faces are
 // keyed by FamilyKey (PolyhedralWheel's FAMILY_FACE_SLOTS), not by this
 // order, so the wheel is unaffected.
-export const FAMILY_ORDER = [
+export const FAMILY_ORDER = ['DICTO_TRANSITIONAL', 
   'DELTAHEDRA',
   'PLATONIC',
   'ARCHIMEDEAN',
@@ -66,6 +67,9 @@ export const FAMILY_ORDER = [
 // non-interactive "star polyhedra" category (Kepler-Poinsot and other
 // non-convex forms), where it would actually mean something.
 export const FAMILY_META = {
+  // DICTO Transitional Shells (DICTO 2026-10-13; the study "Capturing the In-betweens"): stages of DICTO's nested structures with
+  // their pieces fused into one solid, each face in its piece's colour (faceColours). A ring inside a ring: one shell inside another.
+  DICTO_TRANSITIONAL: { label: 'DICTO Transitional Shells', symbol: '◎' },
   DELTAHEDRA: { label: 'Deltahedra', symbol: '△' },
   PLATONIC: { label: 'Platonic', symbol: '⬠' },
   ARCHIMEDEAN: { label: 'Archimedean', symbol: '⬡' },
@@ -171,6 +175,7 @@ export const KALEIDOHEDRA_VERIFIED = ['BAIN_RD', 'REGULAR_HEX_ED', 'BAIN_ED', 'D
 export const REGULAR_NINE_NEW = ['RHOMBOHEDRON_60', 'RHOMBIC_PRISM_60', 'LEANING_SQUARE_PRISM', 'LEANING_HEX_PRISM_60'];
 export const REGULAR_NINE = ['CUBE', 'RHOMBOHEDRON_60', 'LEANING_SQUARE_PRISM', 'RHOMBIC_PRISM_60', 'PRISM_6', 'LEANING_HEX_PRISM_60', 'BAIN_RD', 'REGULAR_HEX_ED', 'TRUNCATED_OCTAHEDRON'];
 const BASE_IDS = {
+  DICTO_TRANSITIONAL: TRANSITIONAL_IDS,
   DELTAHEDRA: DELTAHEDRON_IDS,
   PLATONIC: PLATONIC_ADDITION_IDS,
   ARCHIMEDEAN: ARCHIMEDEAN_ADDITION_IDS,
