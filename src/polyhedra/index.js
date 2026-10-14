@@ -21,6 +21,7 @@ import { DODECA13_ADDITIONS, DODECA13_ADDITION_IDS } from './dodeca13.js';
 import { EDGE_ROOF_ADDITIONS, EDGE_ROOF_ADDITION_IDS } from './edgeRoof.js';
 import { KIT13_ADDITIONS, KIT13_ADDITION_IDS, KITS13 as KITS13_BASE } from './kits13.js';
 import { CLEO_SPHERE_ADDITIONS, CLEO_SPHERE_ADDITION_IDS, CLEO_SPHERE_KITS } from './cleo-sphere.js';
+import { GREAT_ICO_ADDITIONS, GREAT_ICO_KITS } from './great-icosahedron.js';
 import { TRANSITIONAL_ADDITIONS, TRANSITIONAL_IDS } from './transitional.js';
 import { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS } from './bridges.js';
 import { STELLATION_ADDITIONS, STELLATION_IDS } from './stellations/index.js';
@@ -40,8 +41,9 @@ export { DODECA13_ADDITIONS, DODECA13_ADDITION_IDS, DODECA13_PARTS, DODECA13_VOL
 export { EDGE_ROOF_ADDITIONS, EDGE_ROOF_ADDITION_IDS } from './edgeRoof.js';
 export { KIT13_ADDITIONS, KIT13_ADDITION_IDS } from './kits13.js';
 export { CLEO_SPHERE_ADDITIONS, CLEO_SPHERE_ADDITION_IDS } from './cleo-sphere.js';
+export { GREAT_ICO_ADDITIONS, GREAT_ICO_ADDITION_IDS } from './great-icosahedron.js';
 // The kits: the 13s and the octet's (kits13.js), and the CLEO sphere's (DICTO 2026-10-14, cleo-sphere.js).
-export const KITS13 = { ...KITS13_BASE, ...CLEO_SPHERE_KITS };
+export const KITS13 = { ...KITS13_BASE, ...CLEO_SPHERE_KITS, ...GREAT_ICO_KITS };
 export { TRANSITIONAL_ADDITIONS, TRANSITIONAL_IDS } from './transitional.js';
 export { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS, BRIDGES_3D_IDS } from './bridges.js';
 export { STELLATION_ADDITIONS, STELLATION_IDS, stellationInfo } from './stellations/index.js';
@@ -62,6 +64,7 @@ export const POLYHEDRA = {
   ...EDGE_ROOF_ADDITIONS,
   ...KIT13_ADDITIONS,
   ...CLEO_SPHERE_ADDITIONS,
+  ...GREAT_ICO_ADDITIONS,
   ...TRANSITIONAL_ADDITIONS,
   ...BRIDGE_ADDITIONS,
   ...STELLATION_ADDITIONS,
