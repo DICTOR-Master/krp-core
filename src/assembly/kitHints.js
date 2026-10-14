@@ -78,3 +78,59 @@ export function kitSlots(nodes, specs, kit, { near, cap = 12 } = {}) {
   }
   return out;
 }
+
+/**
+ * The 12 corners of the icosahedron a kit fills, in the kit's own frame, or null when the finished kit is not an icosahedron
+ * (DICTO 2026-10-14: Pacioli's three golden rectangles shown on every icosahedron kit). Every piece corner must lie inside the
+ * icosahedron through the 12 farthest corners.
+ */
+const icoCache = new WeakMap();
+export function kitIcosahedron(kit, specs) {
+  if (icoCache.has(kit)) return icoCache.get(kit);
+  const pts = kit.entries.flatMap((e) => placeVertices(specs[e.shape]?.vertices ?? [], e.position, e.quaternion));
+  const R = Math.max(...pts.map((v) => Math.hypot(...v))), tol = 1e-6 * Math.max(R, 1);
+  const far = [];
+  for (const v of pts) if (Math.abs(Math.hypot(...v) - R) < tol && far.every((w) => dist(v, w) > tol * 10)) far.push(v);
+  let out = null;
+  if (far.length === 12) {
+    const e = Math.min(...far.flatMap((v, i) => far.slice(i + 1).map((w) => dist(v, w))));
+    const nb = far.map((v) => far.map((w, j) => (Math.abs(dist(v, w) - e) < tol * 10 ? j : -1)).filter((j) => j >= 0));
+    if (nb.every((n) => n.length === 5)) {
+      const faces = [];
+      for (let a = 0; a < 12; a++) for (const b of nb[a]) for (const c of nb[a]) if (a < b && b < c && nb[b].includes(c)) faces.push([a, b, c]);
+      const inside = faces.length === 20 && faces.every(([a, b, c]) => {
+        const [A, B, C] = [far[a], far[b], far[c]], u = B.map((x, k) => x - A[k]), w = C.map((x, k) => x - A[k]);
+        let n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]];
+        const d = n[0] * A[0] + n[1] * A[1] + n[2] * A[2]; const s = d < 0 ? -1 : 1; n = n.map((x) => x * s);
+        return pts.every((p) => n[0] * p[0] + n[1] * p[1] + n[2] * p[2] <= Math.abs(d) + tol * 100 * Math.hypot(...n));
+      });
+      if (inside) out = far;
+    }
+  }
+  icoCache.set(kit, out);
+  return out;
+}
+
+/**
+ * Pacioli's three golden rectangles of an icosahedron given by its 12 corners: [[4 corners] x3], each through the centre with two
+ * opposite edges as its short sides.
+ */
+export function goldenRectangles(corners) {
+  const c = [0, 1, 2].map((k) => corners.reduce((t, v) => t + v[k], 0) / corners.length);
+  const P = corners.map((v) => v.map((x, k) => x - c[k]));
+  const e = Math.min(...P.flatMap((v, i) => P.slice(i + 1).map((w) => dist(v, w))));
+  const used = new Set(), rects = [];
+  for (let i = 0; i < 12 && rects.length < 3; i++) for (let j = i + 1; j < 12; j++) {
+    if (used.has(i) || used.has(j) || Math.abs(dist(P[i], P[j]) - e) > 1e-6 * e) continue;
+    const opp = (a) => P.findIndex((w) => dist(w, P[a].map((x) => -x)) < 1e-6 * e);
+    const ii = opp(i), jj = opp(j);
+    // the rectangle i, j, opp(i), opp(j) is golden only when i, j, opp(i), opp(j) lie in a plane through the centre with no
+    // other corner on it: the three rectangles use 12 different corners.
+    if ([ii, jj].some((k) => k < 0 || used.has(k))) continue;
+    const quad = [i, j, ii, jj];
+    rects.push([P[i], P[j], P[ii], P[jj]].map((v) => v.map((x, k) => x + c[k])));
+    quad.forEach((k) => used.add(k));
+    break;
+  }
+  return rects.length === 3 ? rects : null;
+}
