@@ -24,6 +24,7 @@ import { CLEO_SPHERE_ADDITIONS, CLEO_SPHERE_ADDITION_IDS, CLEO_SPHERE_KITS } fro
 import { CLEO_TOWERS_ADDITIONS, CLEO_TOWERS_KITS } from './cleo-towers.js';
 import { SCURVE_OCTET_ADDITIONS, SCURVE_OCTET_KITS } from './scurve-octet.js';
 import { BALL_SET_ADDITIONS, BALL_SET_KITS } from './ball-set.js';
+import { TETOKTJIRU_ADDITIONS, TETOKTJIRU_KITS } from './tetoktjiru.js';
 import { TETRAPOD_ADDITIONS } from './tetrapod-pieces.js';
 import { GREAT_ICO_ADDITIONS, GREAT_ICO_KITS } from './great-icosahedron.js';
 import { STAR_KITS } from './star-kits.js';
@@ -49,11 +50,12 @@ export { CLEO_SPHERE_ADDITIONS, CLEO_SPHERE_ADDITION_IDS } from './cleo-sphere.j
 export { CLEO_TOWERS_ADDITIONS, CLEO_TOWERS_ADDITION_IDS, CLEO_TOWERS_VOLUMES } from './cleo-towers.js';
 export { SCURVE_OCTET_ADDITIONS, SCURVE_OCTET_ADDITION_IDS, SCURVE_OCTET_VOLUMES } from './scurve-octet.js';
 export { BALL_SET_ADDITIONS, BALL_SET_ADDITION_IDS, BALL_SET_VOLUMES } from './ball-set.js';
+export { TETOKTJIRU_ADDITIONS, TETOKTJIRU_ADDITION_IDS, TETOKTJIRU_VOLUMES } from './tetoktjiru.js';
 export { TETRAPOD_ADDITIONS, TETRAPOD_ADDITION_IDS } from './tetrapod-pieces.js';
 export { GREAT_ICO_ADDITIONS, GREAT_ICO_ADDITION_IDS } from './great-icosahedron.js';
 // The kits: the 13s and the octet's (kits13.js), the CLEO sphere's (DICTO 2026-10-14, cleo-sphere.js), and Cleo Towers and the OG core
 // of Aktis beside it (DICTO 2026-10-20, cleo-towers.js).
-export const KITS13 = { ...KITS13_BASE, ...CLEO_SPHERE_KITS, ...CLEO_TOWERS_KITS, ...BALL_SET_KITS, ...SCURVE_OCTET_KITS, ...STAR_KITS, ...GREAT_ICO_KITS };
+export const KITS13 = { ...KITS13_BASE, ...CLEO_SPHERE_KITS, ...CLEO_TOWERS_KITS, ...TETOKTJIRU_KITS, ...BALL_SET_KITS, ...SCURVE_OCTET_KITS, ...STAR_KITS, ...GREAT_ICO_KITS };
 export { TRANSITIONAL_ADDITIONS, TRANSITIONAL_IDS } from './transitional.js';
 export { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS, BRIDGES_3D_IDS } from './bridges.js';
 export { STELLATION_ADDITIONS, STELLATION_IDS, stellationInfo } from './stellations/index.js';
@@ -76,6 +78,7 @@ export const POLYHEDRA = {
   ...CLEO_SPHERE_ADDITIONS,
   ...CLEO_TOWERS_ADDITIONS,
   ...BALL_SET_ADDITIONS,
+  ...TETOKTJIRU_ADDITIONS,
   ...SCURVE_OCTET_ADDITIONS,
   ...TETRAPOD_ADDITIONS,
   ...GREAT_ICO_ADDITIONS,
