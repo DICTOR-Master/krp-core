@@ -3,7 +3,9 @@
 // diagonal neighbours of its own kind; growing a build by always taking every slot offered, three
 // rounds deep, never makes two pieces overlap, and every piece stays on the checkerboard (Hexa where
 // the lattice coordinates add up odd from a Key, Key where even). The DICTO Dodeca-13: its mirror
-// column and bcc slots, none overlapping when placed one at a time.
+// column and bcc slots, none overlapping when placed one at a time. DICTO's clusters (#41, #42): the Jewel-Tetra / -Octa and the
+// Sunstar-Tetra / -Octa offer their next copies and the loose stellas or Dogstars of their tilings, and two rounds of every slot
+// never overlap. Compact growth (DICTO 2026-10-20): always taking the first slot keeps a build round its middle.
 import { POLYHEDRA } from '../src/polyhedra/index.js';
 import { hintSlots } from '../src/assembly/hints.js';
 import { SPACE_FILLING_PAIR_LIST } from '../src/polyhedra/families.js';
@@ -72,6 +74,29 @@ for (const pair of SPACE_FILLING_PAIR_LIST) {
   const lone = (id) => hintSlots([at(id, [0, 0, 0], 'x')], POLYHEDRA, { cap: 99 }).length;
   const single = ['TRUNCATED_TETRAHEDRON', 'CUBOCTAHEDRON', 'TRUNCATED_CUBE', 'PRISM_6', 'PRISM_8'], several = ['D4', 'D8', 'CUBE', 'PRISM_3'];
   check(`lone pieces: ${single.map((id) => `${id} ${lone(id)}`).join(', ')} offer slots; ${several.map((id) => `${id} ${lone(id)}`).join(', ')} wait`, single.every((id) => lone(id) > 0) && several.every((id) => lone(id) === 0));
+}
+// DICTO's clusters on their tilings (two rounds of every slot, no overlaps; every piece on its tiling's cells)
+for (const [cluster, loose] of [['DJ_TETRAHEDRAL_CLUSTER', 'STELLA_OCTANGULA'], ['DJ_OCTAHEDRAL_CLUSTER', 'STELLA_OCTANGULA'], ['DODECA_TETRAHEDRAL_CLUSTER', 'DOGSTAR'], ['DODECA_OCTAHEDRAL_CLUSTER', 'DOGSTAR']]) {
+  const nodes = [at(cluster, [0, 0, 0], 'c0')];
+  for (let round = 0; round < 2; round++) {
+    const slots = hintSlots(nodes, POLYHEDRA, { cap: round === 0 ? 999 : 12 });
+    for (const s of slots) nodes.push(at(s.shape, s.position, `c${nodes.length}`));
+  }
+  const P = nodes.map((n) => placedSolid(POLYHEDRA[n.shape], n.transform.position));
+  let bad = 0;
+  for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
+    const d = Math.hypot(...nodes[i].transform.position.map((x, k) => x - nodes[j].transform.position[k]));
+    if (d < 6 && solidsOverlap(P[i], P[j])) bad++;
+  }
+  const kinds = nodes.reduce((t, n) => ({ ...t, [n.shape]: (t[n.shape] ?? 0) + 1 }), {});
+  check(`${POLYHEDRA[cluster].name}: two rounds of slots, ${kinds[cluster]} clusters and ${kinds[loose] ?? 0} ${POLYHEDRA[loose].name}, ${bad} overlapping pairs`, bad === 0 && kinds[cluster] > 1 && (kinds[loose] ?? 0) > 1);
+}
+// compact growth: always taking the first slot keeps the build round its middle
+{
+  const nodes = [at('DRAGON_JEWEL', [0, 0, 0], 'g0')];
+  for (let i = 0; i < 30; i++) { const s = hintSlots(nodes, POLYHEDRA)[0]; nodes.push(at(s.shape, s.position, `g${nodes.length}`)); }
+  const r = Math.max(...nodes.map((n) => Math.hypot(...n.transform.position))) / (2 * K);
+  check(`compact growth: 31 Jewels and stellas taken first-slot-first reach ${r.toFixed(2)} cells from the start (want at most 2)`, r <= 2 + 1e-9);
 }
 console.log(failures ? `${failures} failures.` : 'All checks passed (0 failures).');
 process.exit(failures ? 1 : 0);

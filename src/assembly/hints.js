@@ -23,6 +23,7 @@
 import { solidsOverlap, placedSolid, placeVertices } from './overlap.js';
 import { honeycombRules } from './honeycombs.js';
 import { SPACE_FILLING_PAIR_LIST } from '../polyhedra/families.js';
+import { DJ_OCTA_TILING } from '../polyhedra/stellaJewel.js';
 
 const K = (1 + Math.sqrt(5)) / 4; // phi / 2
 const IDENTITY = [0, 0, 0, 1];
@@ -60,6 +61,26 @@ const ADMIRAL_RULE = [{ shape: 'D20', offset: [0, 0, 0], quaternion: IDENTITY },
 // Pieces whose pattern shares one origin: a slot there is only "taken" by the same piece in the same turn.
 const SHARED_ORIGIN = new Set(['DICTO_EDGE_ROOF', 'D20']);
 
+// DICTO's clusters (DICTO 2026-10-20; the Jewel paper #41 and the Sunstar paper #42): the Jewel-Tetra and Jewel-Octa, and the
+// Sunstar-Tetra and Sunstar-Octa (the same cells, dodecahedra and Dogstars for Jewels and stellas), each on its tiling with loose
+// stellas or Dogstars. In cell units (a cell is 2K here), from the cluster's own centre: the Tetra on the all-even anchors (its next
+// copies 2 cells along the axes and the face diagonals), the Octa on the lattice DJ_OCTA_TILING (its 10 shortest steps); the loose
+// pieces on the odd cells beside its Jewels or dodecahedra (for the Octa none of them a lattice point, so all are loose).
+const CELL = 2 * K;
+const cellRule = (entries) => entries.map(([shape, v]) => ({ shape, offset: v.map((x) => CELL * x), quaternion: IDENTITY }));
+const keyOf = (v) => v.join(',');
+const TETRA_CELLS = [[0, 0, 0], [1, 1, 0], [1, 0, 1], [0, 1, 1]];
+const TETRA_STEPS = [...AXES, ...FACE_DIAGONALS].map((v) => v.map((x) => 2 * x));
+const TETRA_LOOSE = [...new Map(TETRA_CELLS.flatMap((c) => AXES.map((e) => c.map((x, k) => x + e[k]))).map((o) => [keyOf(o), o.map((x) => x - 0.5)])).values()];
+const OCTA_STEPS = [];
+for (const a of [-1, 0, 1]) for (const b of [-1, 0, 1]) for (const c of [-1, 0, 1]) {
+  const v = [0, 1, 2].map((k) => a * DJ_OCTA_TILING.basis[0][k] + b * DJ_OCTA_TILING.basis[1][k] + c * DJ_OCTA_TILING.basis[2][k]);
+  if (v.some((x) => x) && v.reduce((t, x) => t + x * x, 0) <= 8) OCTA_STEPS.push(v);
+}
+const OCTA_LOOSE = [...new Map(AXES.flatMap((j) => AXES.map((e) => j.map((x, k) => x + e[k]))).filter((v) => v.some((x) => x)).map((v) => [keyOf(v), v])).values()];
+const tetraRule = (cluster, loose) => cellRule([...TETRA_STEPS.map((v) => [cluster, v]), ...TETRA_LOOSE.map((v) => [loose, v])]);
+const octaRule = (cluster, loose) => cellRule([...OCTA_STEPS.map((v) => [cluster, v]), ...OCTA_LOOSE.map((v) => [loose, v])]);
+
 export const HINT_RULES = {
   DICTO_EDGE_ROOF: ADMIRAL_RULE,
   DICTO_HEXA: hexaRule('DICTO_HEXA', 'DICTO_HEXA_KEY'),
@@ -69,6 +90,10 @@ export const HINT_RULES = {
   STELLA_OCTANGULA: hexaRule('STELLA_OCTANGULA', 'DRAGON_JEWEL', 2 * K),
   SEAMED_DODECAHEDRON: hexaRule('SEAMED_DODECAHEDRON', 'DOGSTAR', 2 * K),
   DOGSTAR: hexaRule('DOGSTAR', 'SEAMED_DODECAHEDRON', 2 * K),
+  DJ_TETRAHEDRAL_CLUSTER: tetraRule('DJ_TETRAHEDRAL_CLUSTER', 'STELLA_OCTANGULA'),
+  DJ_OCTAHEDRAL_CLUSTER: octaRule('DJ_OCTAHEDRAL_CLUSTER', 'STELLA_OCTANGULA'),
+  DODECA_TETRAHEDRAL_CLUSTER: tetraRule('DODECA_TETRAHEDRAL_CLUSTER', 'DOGSTAR'),
+  DODECA_OCTAHEDRAL_CLUSTER: octaRule('DODECA_OCTAHEDRAL_CLUSTER', 'DOGSTAR'),
 };
 // The honeycomb pairs (not the two above): rules per honeycomb, worked out once.
 const HONEYCOMB_PAIRS = SPACE_FILLING_PAIR_LIST.filter((p) => !p.nonConvex);
@@ -106,9 +131,10 @@ const sameTurn = (a, b) => Math.abs(a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[
 
 /**
  * The free slots next to a build: [{ shape, position, quaternion, from }] (from: the node ids it
- * neighbours), nearest `near` first (default the build's middle; the app passes the piece placed
- * last, so the hint follows the hand), at most `cap`. nodes: [{ id, shape, transform: { position,
- * quaternion } }]; specs: shape id -> spec.
+ * neighbours), the ones touching the most built pieces first, then nearest `near` (default the build's
+ * middle), at most `cap`. So a build grows compactly round its middle (DICTO 2026-10-20: when the hints
+ * followed the piece placed last, a build could end up "miles away from where it should be").
+ * nodes: [{ id, shape, transform: { position, quaternion } }]; specs: shape id -> spec.
  */
 export function hintSlots(nodes, specs, { cap = 12, near } = {}) {
   const slots = [], rules = rulesFor(nodes, specs);
@@ -125,7 +151,7 @@ export function hintSlots(nodes, specs, { cap = 12, near } = {}) {
   if (!slots.length) return [];
   const mid = near ?? [0, 1, 2].map((k) => nodes.reduce((t, n) => t + n.transform.position[k], 0) / nodes.length);
   const dist = (s) => Math.hypot(...s.position.map((x, k) => x - mid[k]));
-  slots.sort((a, b) => dist(a) - dist(b));
+  slots.sort((a, b) => b.from.length - a.from.length || dist(a) - dist(b));
   const built = nodes.filter((n) => specs[n.shape]).map((n) => ({ n, solid: null }));
   const solidOf = (b) => (b.solid ??= placedSolid(specs[b.n.shape], b.n.transform.position, b.n.transform.quaternion));
   const onLattice = (n, s) => {
