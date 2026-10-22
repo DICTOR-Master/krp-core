@@ -19,6 +19,7 @@ import { APERIODIC_ADDITION_IDS, APERIODIC_PAIRS } from './aperiodic.js';
 import { BRIDGES_3D_IDS } from './bridges.js';
 import { STELLATION_IDS } from './stellations/index.js';
 import { TRANSITIONAL_IDS } from './transitional.js';
+import { MOSSERI_SADOC_IDS } from './mosseri-sadoc.js';
 import { RD_TARGET_ADDITION_IDS } from './miscellaneous/rd-targets/index.js';
 import { HEX_TARGET_ADDITION_IDS } from './miscellaneous/hex-targets/index.js';
 // Parallelohedra + Space-Filling Pairs moved up next to the classical
@@ -37,6 +38,7 @@ export const FAMILY_ORDER = ['DICTO_TRANSITIONAL',
   'PARALLELOHEDRA',
   'SPACE_FILLING_PAIRS',
   'APERIODIC',
+  'MOSSERI_SADOC',
   'PRISMS',
   'ANTIPRISMS',
   'BRIDGES_3D',
@@ -116,6 +118,9 @@ export const FAMILY_META = {
   // from every base shape already claimed above (no outline triangle,
   // pentagon, hexagon, diamond, or rectangle reused).
   APERIODIC: { label: 'Aperiodic Sets', symbol: '✺' },
+  // The Mosseri–Sadoc tiles (Mosseri & Sadoc 1982; t1–t6 as Koca et al. 2020 number them): golden tetrahedra, listed by
+  // their number, DICTO's Hound Tooth (t2), Tricap (t3), Cleo (t4) and AXE (t6) among them. A triangle with a dot: a tetrahedron seen from above.
+  MOSSERI_SADOC: { label: 'Mosseri–Sadoc tiles (1982)', symbol: '◬' },
   MISCELLANEOUS: { label: 'Miscellaneous', symbol: '⌂' },
 };
 // Base membership, derived (never hand-copied) from the registry's own
@@ -204,6 +209,9 @@ const BASE_IDS = {
   // Penrose tiling) and the Penrose rhombus prisms. Each piece fills
   // space alone; each pair can also fill it with no repeat.
   APERIODIC: APERIODIC_ADDITION_IDS,
+  // In Mosseri–Sadoc order (t1, t2 Hound Tooth, t3 Tricap, t4 Cleo, t5, t6 AXE): every tile is a tetrahedron, so the
+  // face-type sort keeps it.
+  MOSSERI_SADOC: MOSSERI_SADOC_IDS,
   BRIDGES_3D: BRIDGES_3D_IDS,
   MISCELLANEOUS: MISCELLANEOUS_ADDITION_IDS.filter((id) => id !== 'ELONGATED_DODECAHEDRON'),
 };

@@ -28,6 +28,7 @@ import { TETOKTJIRU_ADDITIONS, TETOKTJIRU_KITS } from './tetoktjiru.js';
 import { TETRAPOD_ADDITIONS } from './tetrapod-pieces.js';
 import { GREAT_ICO_ADDITIONS, GREAT_ICO_KITS } from './great-icosahedron.js';
 import { STAR_KITS } from './star-kits.js';
+import { MOSSERI_SADOC_ADDITIONS, MOSSERI_SADOC_ADDITION_IDS } from './mosseri-sadoc.js';
 import { TRANSITIONAL_ADDITIONS, TRANSITIONAL_IDS } from './transitional.js';
 import { BRIDGE_ADDITIONS, BRIDGE_ADDITION_IDS } from './bridges.js';
 import { STELLATION_ADDITIONS, STELLATION_IDS } from './stellations/index.js';
@@ -53,6 +54,8 @@ export { BALL_SET_ADDITIONS, BALL_SET_ADDITION_IDS, BALL_SET_VOLUMES } from './b
 export { TETOKTJIRU_ADDITIONS, TETOKTJIRU_ADDITION_IDS, TETOKTJIRU_VOLUMES } from './tetoktjiru.js';
 export { TETRAPOD_ADDITIONS, TETRAPOD_ADDITION_IDS } from './tetrapod-pieces.js';
 export { GREAT_ICO_ADDITIONS, GREAT_ICO_ADDITION_IDS } from './great-icosahedron.js';
+// The Mosseri–Sadoc tiles (DICTO 2026-10-23): t1 and t5, and Hound Tooth (t2) and Tricap (t3) from the DICTO Icosa world; AXE (t6) and Cleo (t4) are kit pieces.
+export { MOSSERI_SADOC_ADDITIONS, MOSSERI_SADOC_ADDITION_IDS, MOSSERI_SADOC_TILES, MOSSERI_SADOC_IDS, mosseriSadocTile } from './mosseri-sadoc.js';
 // The kits: the 13s and the octet's (kits13.js), the CLEO sphere's (DICTO 2026-10-14, cleo-sphere.js), and Cleo Towers and the OG core
 // of Aktis beside it (DICTO 2026-10-20, cleo-towers.js).
 export const KITS13 = { ...KITS13_BASE, ...CLEO_SPHERE_KITS, ...CLEO_TOWERS_KITS, ...TETOKTJIRU_KITS, ...BALL_SET_KITS, ...SCURVE_OCTET_KITS, ...STAR_KITS, ...GREAT_ICO_KITS };
@@ -82,6 +85,7 @@ export const POLYHEDRA = {
   ...SCURVE_OCTET_ADDITIONS,
   ...TETRAPOD_ADDITIONS,
   ...GREAT_ICO_ADDITIONS,
+  ...MOSSERI_SADOC_ADDITIONS,
   ...TRANSITIONAL_ADDITIONS,
   ...BRIDGE_ADDITIONS,
   ...STELLATION_ADDITIONS,
@@ -101,6 +105,7 @@ export const POLYHEDRON_IDS = [
   ...DODECA13_ADDITION_IDS,
   ...EDGE_ROOF_ADDITION_IDS,
   ...KIT13_ADDITION_IDS,
+  ...MOSSERI_SADOC_ADDITION_IDS,
   ...TRANSITIONAL_IDS,
   ...BRIDGE_ADDITION_IDS,
   ...STELLATION_IDS,
