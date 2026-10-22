@@ -119,7 +119,7 @@ export const FAMILY_META = {
   // pentagon, hexagon, diamond, or rectangle reused).
   APERIODIC: { label: 'Aperiodic Sets', symbol: '✺' },
   // The Mosseri–Sadoc tiles (Mosseri & Sadoc 1982; t1–t6 as Koca et al. 2020 number them): golden tetrahedra, listed by
-  // their number, DICTO's AXE (t6) and Cleo (t4) among them. A triangle with a dot: a tetrahedron seen from above.
+  // their number, DICTO's Hound Tooth (t2), Tricap (t3), Cleo (t4) and AXE (t6) among them. A triangle with a dot: a tetrahedron seen from above.
   MOSSERI_SADOC: { label: 'Mosseri–Sadoc tiles (1982)', symbol: '◬' },
   MISCELLANEOUS: { label: 'Miscellaneous', symbol: '⌂' },
 };
@@ -209,7 +209,8 @@ const BASE_IDS = {
   // Penrose tiling) and the Penrose rhombus prisms. Each piece fills
   // space alone; each pair can also fill it with no repeat.
   APERIODIC: APERIODIC_ADDITION_IDS,
-  // In Mosseri–Sadoc order (t1, t4 Cleo, t5, t6 AXE): every tile is a tetrahedron, so the face-type sort keeps it.
+  // In Mosseri–Sadoc order (t1, t2 Hound Tooth, t3 Tricap, t4 Cleo, t5, t6 AXE): every tile is a tetrahedron, so the
+  // face-type sort keeps it.
   MOSSERI_SADOC: MOSSERI_SADOC_IDS,
   BRIDGES_3D: BRIDGES_3D_IDS,
   MISCELLANEOUS: MISCELLANEOUS_ADDITION_IDS.filter((id) => id !== 'ELONGATED_DODECAHEDRON'),

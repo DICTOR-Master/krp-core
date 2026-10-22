@@ -54,7 +54,7 @@ export { BALL_SET_ADDITIONS, BALL_SET_ADDITION_IDS, BALL_SET_VOLUMES } from './b
 export { TETOKTJIRU_ADDITIONS, TETOKTJIRU_ADDITION_IDS, TETOKTJIRU_VOLUMES } from './tetoktjiru.js';
 export { TETRAPOD_ADDITIONS, TETRAPOD_ADDITION_IDS } from './tetrapod-pieces.js';
 export { GREAT_ICO_ADDITIONS, GREAT_ICO_ADDITION_IDS } from './great-icosahedron.js';
-// The Mosseri–Sadoc tiles t1 and t5 (DICTO 2026-10-23), with AXE (t6), Cleo (t4), Hound Tooth (t2) and Tricap (t3) listed beside them.
+// The Mosseri–Sadoc tiles (DICTO 2026-10-23): t1 and t5, and Hound Tooth (t2) and Tricap (t3) from the DICTO Icosa world; AXE (t6) and Cleo (t4) are kit pieces.
 export { MOSSERI_SADOC_ADDITIONS, MOSSERI_SADOC_ADDITION_IDS, MOSSERI_SADOC_TILES, MOSSERI_SADOC_IDS, mosseriSadocTile } from './mosseri-sadoc.js';
 // The kits: the 13s and the octet's (kits13.js), the CLEO sphere's (DICTO 2026-10-14, cleo-sphere.js), and Cleo Towers and the OG core
 // of Aktis beside it (DICTO 2026-10-20, cleo-towers.js).
