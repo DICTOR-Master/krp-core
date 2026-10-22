@@ -14,7 +14,7 @@
  * guessed at runtime.
  */
 import { type PolyhedronSpec } from './index.js';
-export type FamilyKey = 'DELTAHEDRA' | 'PLATONIC' | 'ARCHIMEDEAN' | 'JOHNSON' | 'CATALAN' | 'PRISMS' | 'ANTIPRISMS' | 'BRIDGES_3D' | 'POLYTOPES_4D' | 'STELLATIONS' | 'PARALLELOHEDRA' | 'SPACE_FILLING_PAIRS' | 'APERIODIC' | 'MOSSERI_SADOC' | 'MISCELLANEOUS';
+export type FamilyKey = 'DICTO_TRANSITIONAL' | 'REULEAUX_PLATONIC' | 'DELTAHEDRA' | 'PLATONIC' | 'ARCHIMEDEAN' | 'JOHNSON' | 'CATALAN' | 'PRISMS' | 'ANTIPRISMS' | 'BRIDGES_3D' | 'POLYTOPES_4D' | 'STELLATIONS' | 'PARALLELOHEDRA' | 'SPACE_FILLING_PAIRS' | 'APERIODIC' | 'MOSSERI_SADOC' | 'MISCELLANEOUS';
 export declare const FAMILY_ORDER: FamilyKey[];
 export declare const FAMILY_META: Record<FamilyKey, {
   label: string;

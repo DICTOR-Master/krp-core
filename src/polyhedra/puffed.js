@@ -105,6 +105,8 @@ function refine(pts, tris, isBoundary) {
  *   non-indexed triangles; faceIds[k] = the spec face each vertex belongs to; seams = line-segment pairs.
  */
 export function puffSpec(spec, opts = {}) {
+  // An already-curved shape (spec.curved, e.g. the Reuleaux Platonic Solids): its own smooth body, the same at every softness.
+  if (spec.curved) return curvedSoup(spec.curved);
   const amount = Math.max(0, opts.amount ?? 0.25), K = opts.rings ?? 3, baseSeg = opts.edgeSegments ?? 4;
   const V = spec.vertices.map((v) => [v[0], v[1], v[2]]);
   const faces = spec.faces.filter((f) => f.length >= 3);
@@ -266,6 +268,27 @@ export function puffSpec(spec, opts = {}) {
     positions: new Float32Array(pos), normals: new Float32Array(nrm), faceIds: new Uint16Array(fid),
     seams: new Float32Array(seams), triangles: pos.length / 9, cyclic: cyclicCount,
   };
+}
+
+/**
+ * A curved shape's drawn body as puffSpec's output: { positions, index, patch, seams } (indexed triangles, each triangle's face) to
+ * non-indexed triangles with smooth normals (area-weighted over the shared corners, so the creases soften as in the shape's own view),
+ * faceIds from the patches, and its seams.
+ */
+export function curvedSoup(c) {
+  const P = c.positions, I = c.index, N = new Float64Array(P.length);
+  for (let k = 0; k < I.length; k += 3) {
+    const a = 3 * I[k], b = 3 * I[k + 1], d = 3 * I[k + 2];
+    const u = [P[b] - P[a], P[b + 1] - P[a + 1], P[b + 2] - P[a + 2]], w = [P[d] - P[a], P[d + 1] - P[a + 1], P[d + 2] - P[a + 2]];
+    const n = cross(u, w);
+    for (const i of [a, b, d]) { N[i] += n[0]; N[i + 1] += n[1]; N[i + 2] += n[2]; }
+  }
+  const positions = new Float32Array(I.length * 3), normals = new Float32Array(I.length * 3), faceIds = new Uint16Array(I.length);
+  for (let k = 0; k < I.length; k++) {
+    const i = 3 * I[k], n = norm([N[i], N[i + 1], N[i + 2]]);
+    positions.set([P[i], P[i + 1], P[i + 2]], 3 * k); normals.set(n, 3 * k); faceIds[k] = c.patch[Math.floor(k / 3)];
+  }
+  return { positions, normals, faceIds, seams: Float32Array.from(c.seams), triangles: I.length / 3, cyclic: 0 };
 }
 
 // Middle of a sampled welt row (t = 1/2; rows have an even number of steps).
