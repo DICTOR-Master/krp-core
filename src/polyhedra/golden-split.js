@@ -111,6 +111,27 @@ export function pieceSurface(big, states) {
   const p = pieceParts(big, states);
   return cancel([...p.core, ...p.pyramids.flat(), ...p.keys.flat()]);
 }
+/** The convex hull of points as flat faces: { vertices, faces } (faces wound outward; points repeated or inside dropped). */
+export function convexPolygons(points) {
+  const P = [];
+  for (const p of points) if (!P.some((q) => Math.hypot(...sub(p, q)) < 1e-9)) P.push(p);
+  const c = centroid(P), size = Math.max(...P.map((p) => Math.hypot(...sub(p, c)))), eps = 1e-9 * size * size;
+  const seen = new Set(), faces = [];
+  for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) for (let k = j + 1; k < P.length; k++) {
+    let n = cross(sub(P[j], P[i]), sub(P[k], P[i]));
+    if (Math.hypot(...n) < eps) continue;
+    const d = P.map((q) => dot(n, sub(q, P[i])));
+    if (!d.every((x) => x < eps) && !d.every((x) => x > -eps)) continue;
+    if (d.some((x) => x > eps)) n = mul(-1, n);
+    const on = P.map((_, m) => m).filter((m) => Math.abs(d[m]) <= eps), key = on.join(',');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const fc = centroid(on.map((m) => P[m])), u = sub(P[on[0]], fc), w = cross(n, u);
+    faces.push(on.sort((a, b) => Math.atan2(dot(sub(P[a], fc), w), dot(sub(P[a], fc), u)) - Math.atan2(dot(sub(P[b], fc), w), dot(sub(P[b], fc), u))));
+  }
+  const used = [...new Set(faces.flat())].sort((a, b) => a - b), map = new Map(used.map((m, i) => [m, i]));
+  return { vertices: used.map((m) => P[m]), faces: faces.map((f) => f.map((m) => map.get(m))) };
+}
 /** Triangles joined into flat faces where neighbours lie in one plane: { vertices, faces } (faces wound outward), plus `tag(face)`. */
 export function toPolygons(tris) {
   const V = [], idx = new Map();
