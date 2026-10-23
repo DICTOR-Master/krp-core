@@ -99,5 +99,12 @@ for (const k of ICOSA_CLUSTER_KEYS) for (const [view, want] of Object.entries(CO
   const eq = R.faces.filter((f) => f.length === 3 && f.every((a, i) => Math.abs(len(sub(R.vertices[a], R.vertices[f[(i + 1) % 3]])) - 1) < 1e-6)).length;
   check(`Admiral Cap, the edge roof (Polyhedraverse): closed, outward, Euler ${m.euler}, volume ${m.vol.toFixed(6)} (want phi/12 = ${((1 + S5) / 24).toFixed(6)}), unit equilateral faces ${eq} (want 2)`, m.closed && m.euler === 2 && Math.abs(m.vol - (1 + S5) / 24) < 1e-6 && eq === 2);
 }
+{ // Unborn (DICTO's name; Koca et al. 2015's pseudoicosahedron): the void dodecahedron of the simple cubic icosahedron lattice minus its 8 Tricaps
+  const { POLYHEDRA } = await import('../src/polyhedra/index.js'); const U = POLYHEDRA.DICTO_UNBORN; const m = measure(U);
+  const eq = U.faces.filter((f) => f.every((a, i) => Math.abs(len(sub(U.vertices[a], U.vertices[f[(i + 1) % 3]])) - 1) < 1e-6)).length;
+  const tri = measure(ICOSA_SOLIDS.TRICAP).vol, dod = (5 + S5) / 4;
+  check(`Unborn (Polyhedraverse): closed, outward, Euler ${m.euler}, volume ${m.vol.toFixed(6)} (want (3 + 7√5)/12 = ${((3 + 7 * S5) / 12).toFixed(6)} = dodecahedron(1/phi) ${dod.toFixed(6)} − 8 Tricaps ${(8 * tri).toFixed(6)}), unit equilateral faces ${eq} (want 8)`,
+    m.closed && m.euler === 2 && Math.abs(m.vol - (3 + 7 * S5) / 12) < 1e-9 && Math.abs(m.vol - (dod - 8 * tri)) < 1e-6 && eq === 8);
+}
 console.log(failures ? `${failures} failures.` : 'All checks passed (0 failures).');
 process.exit(failures ? 1 : 0);
