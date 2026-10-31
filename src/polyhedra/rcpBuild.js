@@ -43,15 +43,26 @@ export function rcpTargetOptions(closureNames) {
 // cells comparably scaled to each other as more shells are added,
 // rather than each cell separately normalized.
 const VIEW_MARGIN = 5;
-function projectAll(seedSpecId, targetName, cellsWithVerts, adjacency) {
+// Which side of the complex the eye sits on, along w (DICTO RCP, DICTO 2026-10-31). 'seed' (the
+// default, unchanged): the eye at +viewDistance, on the seed's side, so the seed is drawn largest and
+// every later cell a little smaller. 'far': the eye at -viewDistance, beyond the far side, i.e. each
+// vertex projected as xyz / (viewDistance + w): the seed is drawn smallest and each shell a little
+// larger than the one before. Either way the whole complex is then scaled so the seed is at its true
+// (registry) size.
+export const EYE_SIDES = ['seed', 'far'];
+const eyeProjector = (eyeSide, viewDistance) => (eyeSide === 'far'
+  ? (v) => projectVec4ToVec3([v[0], v[1], v[2], -v[3]], viewDistance)
+  : (v) => projectVec4ToVec3(v, viewDistance));
+function projectAll(seedSpecId, targetName, cellsWithVerts, adjacency, eyeSide = 'seed') {
   const allVerts = cellsWithVerts.flatMap((c) => c.verts4D);
   const maxAbsW = Math.max(...allVerts.map((v) => Math.abs(v[3])), 1e-6);
   const viewDistance = maxAbsW * VIEW_MARGIN;
+  const project = eyeProjector(eyeSide, viewDistance);
   const cells = cellsWithVerts.map((c) => ({
     id: c.id,
     shell: c.shell,
-    vertices3D: c.verts4D.map((v) => projectVec4ToVec3(v, viewDistance)),
-    coordPoint3D: projectVec4ToVec3(c.coordPoint4D, viewDistance),
+    vertices3D: c.verts4D.map(project),
+    coordPoint3D: project(c.coordPoint4D),
   }));
   // Real bug found live (2026-09-16): cell 0's own perspective-projected
   // vertices are a PURE UNIFORM SCALE of the real registry seed (cell
@@ -90,9 +101,9 @@ function projectAll(seedSpecId, targetName, cellsWithVerts, adjacency) {
       }
     }
   }
-  return { seedSpecId, targetName, viewDistance, cells, adjacency, cell0IsSeed: true };
+  return { seedSpecId, targetName, viewDistance, eyeSide, cells, adjacency, cell0IsSeed: true };
 }
-function fromFourDCellComplex(complex) {
+function fromFourDCellComplex(complex, eyeSide = 'seed') {
   // This cell's own "coordinate point" (RcpComplex.cells[].coordPoint3D's
   // own doc comment) -- its outward `normal` scaled to the same depth
   // the seed's own embedding uses, i.e. exactly where the seed's own
@@ -106,26 +117,28 @@ function fromFourDCellComplex(complex) {
     coordPoint4D: [cell.normal[0] * depth, cell.normal[1] * depth, cell.normal[2] * depth, cell.normal[3] * depth],
   }));
   const adjacency = complex.adjacency.map(([a, b]) => [a, b]);
-  return projectAll(complex.seedSpecId, complex.targetName, cellsWithVerts, adjacency);
+  return projectAll(complex.seedSpecId, complex.targetName, cellsWithVerts, adjacency, eyeSide);
 }
 /**
  * The one entry point the UI/render layer needs: given a real seed id
  * and a target closure name (e.g. 'D4' + '16-cell'), returns every
  * cell's projected 3D vertices in one shared
  * perspective frame plus the shell/adjacency bookkeeping the shell-build
- * feature needs.
+ * feature needs. `eyeSide` ('seed', the default, or 'far'): see EYE_SIDES.
  */
-export function buildRcpComplex(seedSpecId, targetName) {
+export function buildRcpComplex(seedSpecId, targetName, { eyeSide = 'seed' } = {}) {
   const seedSpec = POLYHEDRA[seedSpecId];
   if (!seedSpec)
     throw new Error(`buildRcpComplex: unknown seed id ${seedSpecId}`);
+  if (!EYE_SIDES.includes(eyeSide))
+    throw new Error(`buildRcpComplex: unknown eyeSide ${eyeSide}`);
   const { closure, vertexFirst } = parseRcpTarget(targetName);
   if (vertexFirst) {
     if (!VERTEX_FIRST_CLOSURES.has(closure))
       throw new Error(`buildRcpComplex: no vertex-first mode for ${closure}`);
-    return buildVertexFirstComplex(seedSpecId, targetName, buildCellComplex(seedSpec, closure));
+    return buildVertexFirstComplex(seedSpecId, targetName, buildCellComplex(seedSpec, closure), eyeSide);
   }
-  return fromFourDCellComplex(buildCellComplex(seedSpec, targetName));
+  return fromFourDCellComplex(buildCellComplex(seedSpec, targetName), eyeSide);
 }
 const sub3 = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -158,7 +171,7 @@ const tetOrientation = (v) => dot3(sub3(v[1], v[0]), cross3(sub3(v[2], v[0]), su
  * tetrahedra around an edge leave a 7.36deg gap), which is the point of
  * showing them.
  */
-function buildVertexFirstComplex(seedSpecId, targetName, complex) {
+function buildVertexFirstComplex(seedSpecId, targetName, complex, eyeSide = 'seed') {
   const seedVerts = POLYHEDRA[seedSpecId].vertices;
   if (seedVerts.length !== 4)
     throw new Error(`buildVertexFirstComplex: tetrahedral seeds only, ${seedSpecId} has ${seedVerts.length} vertices`);
@@ -217,8 +230,9 @@ function buildVertexFirstComplex(seedSpecId, targetName, complex) {
   const rotated = verts4D.map((vs) => vs.map(toAxis));
   const maxAbsW = Math.max(...rotated.flat().map((v) => Math.abs(v[3])), 1e-6);
   const viewDistance = maxAbsW * VIEW_MARGIN;
-  let projected = rotated.map((vs) => vs.map((v) => projectVec4ToVec3(v, viewDistance)));
-  let coords = coords4D.map((c) => projectVec4ToVec3(toAxis(c), viewDistance));
+  const project = eyeProjector(eyeSide, viewDistance);
+  let projected = rotated.map((vs) => vs.map(project));
+  let coords = coords4D.map((c) => project(toAxis(c)));
   // Align projected cell 0 onto the registry seed: mirror if handedness
   // differs, then rotate the pivot direction (and one more vertex) onto
   // the seed's, scale to the same RMS size, and centre.
@@ -294,7 +308,7 @@ function buildVertexFirstComplex(seedSpecId, targetName, complex) {
     ...(id > 0 && flat.has(old) ? { openVertices3D: flat.get(old) } : {}),
   }));
   const adjacency = complex.adjacency.map(([a, b]) => [newIdOf.get(a), newIdOf.get(b)]);
-  return { seedSpecId, targetName, viewDistance, cells, adjacency, cell0IsSeed: false, openGaps };
+  return { seedSpecId, targetName, viewDistance, eyeSide, cells, adjacency, cell0IsSeed: false, openGaps };
 }
 /** The root's own spec for the given view: the registry seed, except a Closed vertex-first root, which shows cell 0's projected (skewed) shape. */
 export function rootSpecForView(complex, view3D) {

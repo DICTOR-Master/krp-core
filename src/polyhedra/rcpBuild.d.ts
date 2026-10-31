@@ -19,6 +19,8 @@ export interface RcpComplex {
   seedSpecId: string;
   targetName: string;
   viewDistance: number;
+  /** Which side of the complex the eye sits on along w; see EYE_SIDES. */
+  eyeSide: RcpEyeSide;
   cells: {
     id: number;
     shell: number;
@@ -34,6 +36,9 @@ export interface RcpComplex {
     faceB: Vec3[];
   }[];
 }
+/** 'seed' (default): the eye on the seed's side, the seed drawn largest; 'far' (DICTO RCP): the eye beyond the far side, each shell a little larger. The seed is at its true size either way. */
+export type RcpEyeSide = 'seed' | 'far';
+export declare const EYE_SIDES: RcpEyeSide[];
 export declare const VERTEX_FIRST_SUFFIX = " (vertex-first)";
 /** Splits an RCP target name into its closure (a FOUR_D_SHAPE_PARAMS name) and whether it's the vertex-first variant. */
 export declare function parseRcpTarget(target: string): {
@@ -49,7 +54,7 @@ export declare function rcpTargetOptions(closureNames: string[]): string[];
  * perspective frame plus the shell/adjacency bookkeeping the shell-build
  * feature needs.
  */
-export declare function buildRcpComplex(seedSpecId: string, targetName: string): RcpComplex;
+export declare function buildRcpComplex(seedSpecId: string, targetName: string, options?: { eyeSide?: RcpEyeSide }): RcpComplex;
 /** The root's own spec for the given view: the registry seed, except a Closed vertex-first root, which shows cell 0's projected (skewed) shape. */
 export declare function rootSpecForView(complex: RcpComplex, view3D: boolean): PolyhedronSpec;
 /**
