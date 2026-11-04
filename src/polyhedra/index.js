@@ -31,6 +31,7 @@ import { TETOKTJIRU_ADDITIONS, TETOKTJIRU_KITS } from './tetoktjiru.js';
 import { TETRAPOD_ADDITIONS } from './tetrapod-pieces.js';
 import { STAR_CORES_ADDITIONS } from './star-cores-solids.js';
 import { STAR_CORES_SHAPE_ADDITIONS } from './star-cores-shapes.js';
+import { NARCISSUS_ADDITIONS } from './narcissus.js';
 import { GREAT_ICO_ADDITIONS, GREAT_ICO_KITS } from './great-icosahedron.js';
 import { STAR_KITS } from './star-kits.js';
 import { MOSSERI_SADOC_ADDITIONS, MOSSERI_SADOC_ADDITION_IDS } from './mosseri-sadoc.js';
@@ -65,6 +66,7 @@ export { TETRAPOD_ADDITIONS, TETRAPOD_ADDITION_IDS } from './tetrapod-pieces.js'
 // DICTO's four Star Cores solids (D106–D109) and Kagemusha's crests (DICTO 2026-10-31, 2026-11-01).
 export { STAR_CORES_ADDITIONS, STAR_CORES_SOLID_IDS, KAGEMUSHA_CREST_IDS } from './star-cores-solids.js';
 export { STAR_CORES_SHAPE_ADDITIONS, STAR_CORES_SHAPE_IDS, STAR_CORES_LIST } from './star-cores-shapes.js';
+export { NARCISSUS_ADDITIONS, NARCISSUS_IDS } from './narcissus.js';
 export { GREAT_ICO_ADDITIONS, GREAT_ICO_ADDITION_IDS } from './great-icosahedron.js';
 // The Mosseri–Sadoc tiles (DICTO 2026-10-23): t1 and t5, and Hound Tooth (t2) and Tricap (t3) from the DICTO Icosa world; AXE (t6) and Cleo (t4) are kit pieces.
 // The Reuleaux Platonic Solids (DICTO 2026-10-21; DICTO's idea, paper #45): curved bodies, drawn from `curved`, fitted by their corners.
@@ -102,6 +104,7 @@ export const POLYHEDRA = {
   ...SCURVE_OCTET_ADDITIONS,
   ...TETRAPOD_ADDITIONS,
   ...STAR_CORES_ADDITIONS,
+  ...NARCISSUS_ADDITIONS,
   ...STAR_CORES_SHAPE_ADDITIONS,
   ...GREAT_ICO_ADDITIONS,
   ...MOSSERI_SADOC_ADDITIONS,
